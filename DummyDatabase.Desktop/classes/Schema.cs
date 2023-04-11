@@ -23,6 +23,18 @@ namespace DBCore
         public Scheme()
         {
         }
+
+        public List<string> GetSchemeColumns()
+        {
+            List<string> columns = new();
+            columns.Add("Список столбцов таблицы:");
+            foreach (SchemeColumn column in Columns)
+            {
+                columns.Add(column.Name + " - " + column.Type);
+            }
+
+            return columns;
+        }
     }
 
     class SchemeColumn

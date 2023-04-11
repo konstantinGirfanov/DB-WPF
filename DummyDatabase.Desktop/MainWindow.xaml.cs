@@ -41,6 +41,7 @@ namespace DummyDatabase.Desktop
             string schemeName = schemeList.SelectedItem.ToString();
             scheme = WorkWithScheme.ReadScheme(schemesPath + $"\\{schemeName}");
 
+            schemeColumnsList.ItemsSource = scheme.GetSchemeColumns();
         }
 
         private void LoadData()
