@@ -25,6 +25,7 @@ namespace DummyDatabase.Desktop
         public MainWindow()
         {
             InitializeComponent();
+            schemeList.ItemsSource = WorkWithFiles.GetFolderFiles("schemes");
         }
     }
 }
