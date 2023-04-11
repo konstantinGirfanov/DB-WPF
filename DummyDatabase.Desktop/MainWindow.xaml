@@ -17,7 +17,8 @@
             <RowDefinition></RowDefinition>
         </Grid.RowDefinitions>
 
-        <ScrollViewer Grid.Row="0" Grid.Column="0">
+        <TextBlock Text="Какую таблицу открыть?" FontSize="15"/>
+        <ScrollViewer Grid.Row="0" Grid.Column="0" Margin="0 25 0 0">
             <ListBox x:Name="schemeList" MouseDoubleClick="LoadScheme"></ListBox>
         </ScrollViewer>
 
@@ -25,7 +26,8 @@
             <ListBox x:Name="schemeColumnsList"></ListBox>
         </ScrollViewer>
 
-        <ScrollViewer Grid.Column="1" Grid.RowSpan="2">
+        <TextBlock Text="Имеющиеся строки данных:" FontSize="15" Grid.Column="1"/>
+        <ScrollViewer Grid.Column="1" Grid.RowSpan="2" Margin="0 25 0 0">
             <ListBox x:Name="schemeDataRows"></ListBox>
         </ScrollViewer>
     </Grid>
