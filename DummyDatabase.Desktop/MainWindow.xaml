@@ -18,7 +18,7 @@
         </Grid.RowDefinitions>
 
         <ScrollViewer Grid.Row="0" Grid.Column="0">
-            <ListBox x:Name="schemeList"></ListBox>
+            <ListBox x:Name="schemeList" MouseDoubleClick="LoadScheme"></ListBox>
         </ScrollViewer>
 
         <ScrollViewer Grid.Row="1" Grid.Column="0">

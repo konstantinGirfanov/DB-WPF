@@ -22,10 +22,30 @@ namespace DummyDatabase.Desktop
     
     public partial class MainWindow : Window
     {
+        Scheme scheme;
         public MainWindow()
         {
             InitializeComponent();
             schemeList.ItemsSource = WorkWithFiles.GetFolderFiles("schemes");
+        }
+
+        private void LoadScheme(object sender, MouseButtonEventArgs e)
+        {
+            LoadColumns();
+            LoadData();
+        }
+
+        private void LoadColumns()
+        {
+            var schemesPath = WorkWithFiles.GetFolderPath("schemes");
+            string schemeName = schemeList.SelectedItem.ToString();
+            scheme = WorkWithScheme.ReadScheme(schemesPath + $"\\{schemeName}");
+
+        }
+
+        private void LoadData()
+        {
+
         }
     }
 }
