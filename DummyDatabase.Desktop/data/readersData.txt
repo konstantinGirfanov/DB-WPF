@@ -1,0 +1,5 @@
+id;name
+0;leha
+1;dimas
+A;AMOGUS
+2;bobik
