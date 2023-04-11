@@ -99,6 +99,7 @@ namespace DBCore
                 Data.Add(scheme.Columns[i], columnValues[i]);
             }
         }
+
         public override string ToString()
         {
             StringBuilder sb = new();
@@ -125,7 +126,6 @@ namespace DBCore
 
             if (scheme.Columns.Length != lineColumns.Length)
             {
-                DisplayErrorMessage(false, row + 1, 0);
                 return false;
             }
             else
@@ -138,35 +138,30 @@ namespace DBCore
                         case "int":
                             if (!int.TryParse(lineColumns[i], out int _))
                             {
-                                DisplayErrorMessage(true, row + 1, i + 1);
                                 isCorresponded = false;
                             }
                             break;
                         case "float":
                             if (!float.TryParse(lineColumns[i], out float _))
                             {
-                                DisplayErrorMessage(true, row + 1, i + 1);
                                 isCorresponded = false;
                             }
                             break;
                         case "double":
                             if (!double.TryParse(lineColumns[i], out double _))
                             {
-                                DisplayErrorMessage(true, row + 1, i + 1);
                                 isCorresponded = false;
                             }
                             break;
                         case "bool":
                             if (!bool.TryParse(lineColumns[i], out bool _))
                             {
-                                DisplayErrorMessage(true, row + 1, i + 1);
                                 isCorresponded = false;
                             }
                             break;
                         case "dateTime":
                             if (!DateTime.TryParse(lineColumns[i], out DateTime _))
                             {
-                                DisplayErrorMessage(true, row + 1, i + 1);
                                 isCorresponded = false;
                             }
                             break;
@@ -174,18 +169,6 @@ namespace DBCore
                 }
 
                 return isCorresponded;
-            }
-        }
-
-        public static void DisplayErrorMessage(bool isCorrectColumnCount, int row, int column)
-        {
-            if (isCorrectColumnCount)
-            {
-                //ничего
-            }
-            else
-            {
-                //или ничего?
             }
         }
     }

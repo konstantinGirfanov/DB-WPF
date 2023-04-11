@@ -7,8 +7,7 @@ namespace DBCore
     {
         public static List<string> GetFolderFiles(string folderName)
         {
-            string folderPath = GetFolderPath(folderName);
-            var files = Directory.GetFiles(folderPath);
+            var files = Directory.GetFiles(GetFolderPath(folderName));
 
             List<string> stringFiles = new();
             foreach (var file in files)
