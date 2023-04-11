@@ -7,6 +7,26 @@
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
     <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition></ColumnDefinition>
+            <ColumnDefinition></ColumnDefinition>
+        </Grid.ColumnDefinitions>
 
+        <Grid.RowDefinitions>
+            <RowDefinition></RowDefinition>
+            <RowDefinition></RowDefinition>
+        </Grid.RowDefinitions>
+
+        <ScrollViewer Grid.Row="0" Grid.Column="0">
+            <ListBox x:Name="schemeList"></ListBox>
+        </ScrollViewer>
+
+        <ScrollViewer Grid.Row="1" Grid.Column="0">
+            <ListBox x:Name="schemeColumnsList"></ListBox>
+        </ScrollViewer>
+
+        <ScrollViewer Grid.Column="1" Grid.RowSpan="2">
+            <ListBox x:Name="schemeDataRows"></ListBox>
+        </ScrollViewer>
     </Grid>
 </Window>
