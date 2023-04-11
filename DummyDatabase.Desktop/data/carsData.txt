@@ -1,0 +1,4 @@
+id;brand;model;createYear;price
+0;BMW;M3;1488;10000000
+1;lada;M228;2024;15
+aboba;lada;m2;tojeAboba;15

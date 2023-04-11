@@ -1,0 +1,30 @@
+{
+    "name": "Cars",
+    "columns": [
+        {
+            "name": "id",
+            "type": "int",
+            "isPrimary": true
+        },
+        {
+            "name": "brand",
+            "type": "string",
+            "isPrimary": false
+        },
+        {
+            "name": "model",
+            "type": "string",
+            "isPrimary": false
+        },
+        {
+            "name": "createYear",
+            "type": "int",
+            "isPrimary": false
+        },
+        {
+            "name": "priceInRoubles",
+            "type": "int",
+            "isPrimary": false
+        }
+    ]
+}
