@@ -24,7 +24,7 @@ namespace DBCore
             return Directory.GetParent(Directory.GetCurrentDirectory()).Parent.Parent.FullName + $"\\{folderName}";
         }
 
-        private static string GetSchemeDataName(string schemeName)
+        public static string GetSchemeDataName(string schemeName)
         {
             return schemeName.Split('.')[0] + "Data.txt";
         }

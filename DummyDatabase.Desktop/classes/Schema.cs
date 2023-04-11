@@ -3,6 +3,8 @@ using System.Text.Json.Serialization;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using System.Text;
 
 namespace DBCore
 {
@@ -96,6 +98,17 @@ namespace DBCore
             {
                 Data.Add(scheme.Columns[i], columnValues[i]);
             }
+        }
+        public override string ToString()
+        {
+            StringBuilder sb = new();
+
+            foreach (string columnValue in Data.Values.Cast<string>())
+            {
+                sb.Append(columnValue + "   ");
+            }
+
+            return sb.ToString();
         }
     }
 

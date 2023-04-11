@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -46,7 +47,16 @@ namespace DummyDatabase.Desktop
 
         private void LoadData()
         {
-
+            string schemeDataName = WorkWithFiles.GetSchemeDataName(scheme.Name);
+            string dataFolderPath = WorkWithFiles.GetFolderPath("data");
+            if (File.Exists(dataFolderPath + $"\\{schemeDataName}"))
+            {
+                schemeDataRows.ItemsSource = new SchemeData(scheme, dataFolderPath + $"\\{schemeDataName}").Rows;
+            }
+            else
+            {
+                schemeDataRows.ItemsSource = new List<string>() { "Данные не найдены." };
+            }
         }
     }
 }
