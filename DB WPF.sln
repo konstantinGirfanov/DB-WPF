@@ -3,11 +3,17 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.3.32825.248
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DummyDatabase.Console", "DummyDatabase.Console\DummyDatabase.Console.csproj", "{9F4D8528-DA4D-4BE5-B360-3243076F2EA8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DummyDatabase.Console", "DummyDatabase.Console\DummyDatabase.Console.csproj", "{9F4D8528-DA4D-4BE5-B360-3243076F2EA8}"
+	ProjectSection(ProjectDependencies) = postProject
+		{AE609FF8-6627-4DAA-A5F8-FFB03378F524} = {AE609FF8-6627-4DAA-A5F8-FFB03378F524}
+	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DummyDatabase.Core", "DummyDatabase.Core\DummyDatabase.Core.csproj", "{AE609FF8-6627-4DAA-A5F8-FFB03378F524}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DummyDatabase.Core", "DummyDatabase.Core\DummyDatabase.Core.csproj", "{AE609FF8-6627-4DAA-A5F8-FFB03378F524}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DummyDatabase.Desktop", "DummyDatabase.Desktop\DummyDatabase.Desktop.csproj", "{493C1EFE-8067-43AC-ABA2-B9AC0CBFCACF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DummyDatabase.Desktop", "DummyDatabase.Desktop\DummyDatabase.Desktop.csproj", "{493C1EFE-8067-43AC-ABA2-B9AC0CBFCACF}"
+	ProjectSection(ProjectDependencies) = postProject
+		{AE609FF8-6627-4DAA-A5F8-FFB03378F524} = {AE609FF8-6627-4DAA-A5F8-FFB03378F524}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

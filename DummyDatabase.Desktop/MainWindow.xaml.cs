@@ -2,7 +2,7 @@
 using System.IO;
 using System.Windows;
 using System.Windows.Input;
-using DBCore;
+using DummyDatabase.Core;
 
 namespace DummyDatabase.Desktop
 {

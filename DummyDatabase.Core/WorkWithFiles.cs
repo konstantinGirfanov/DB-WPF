@@ -1,19 +1,26 @@
-﻿namespace DBCore
+﻿namespace DummyDatabase.Core
 {
-    static class WorkWithFiles
+    public static class WorkWithFiles
     {
-        public static string GetSchemePath(string schemeName)
+        public static List<string> GetFolderFiles(string folderName)
         {
-            return Directory.GetParent(Directory.GetCurrentDirectory()).Parent.Parent.FullName + "\\" + "schemas" + "\\" + schemeName;
+            var files = Directory.GetFiles(GetFolderPath(folderName));
+
+            List<string> stringFiles = new();
+            foreach (var file in files)
+            {
+                stringFiles.Add(file.Split("\\")[^1]);
+            }
+
+            return stringFiles;
         }
 
-        public static string GetDataPath(string schemeName)
+        public static string GetFolderPath(string folderName)
         {
-            string schemeDataName = GetSchemeDataName(schemeName);
-            return Directory.GetParent(Directory.GetCurrentDirectory()).Parent.Parent.FullName + "\\" + "data" + "\\" + schemeDataName;
+            return Directory.GetParent(Directory.GetCurrentDirectory()).Parent.Parent.FullName + $"\\{folderName}";
         }
 
-        private static string GetSchemeDataName(string schemeName)
+        public static string GetSchemeDataName(string schemeName)
         {
             return schemeName.Split('.')[0] + "Data.txt";
         }

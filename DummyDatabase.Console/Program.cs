@@ -1,36 +1,7 @@
-﻿using System.Text.Json.Serialization;
+﻿using DummyDatabase.Core;
 
 namespace DBConsole
 {
-    class Program
-    {
-        public static void Main()
-        {
-
-        }
-    }
-
-    class Scheme
-    {
-        [JsonPropertyName("name")]
-        public string Name { get; init; }
-
-        [JsonPropertyName("columns")]
-        public SchemeColumn[] Columns { get; init; }
-    }
-
-    class SchemeColumn
-    {
-        [JsonPropertyName("name")]
-        public string Name { get; init; }
-
-        [JsonPropertyName("type")]
-        public string Type { get; init; }
-
-        [JsonPropertyName("isPrimary")]
-        public bool IsPrimary { get; init; }
-    }
-
     class SchemeData
     {
         public List<Row> Rows { get; set; }
