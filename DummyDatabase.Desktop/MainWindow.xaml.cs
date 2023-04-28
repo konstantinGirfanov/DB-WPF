@@ -29,7 +29,7 @@ namespace DummyDatabase.Desktop
         {
             var schemesPath = WorkWithFiles.GetFolderPath("schemes");
             string schemeName = schemeList.SelectedItem.ToString();
-            scheme = WorkWithScheme.ReadScheme(schemesPath + $"\\{schemeName}");
+            scheme = WorkWithScheme.ReadScheme($"{schemesPath}\\{schemeName}");
 
             schemeColumnsList.ItemsSource = scheme.GetSchemeColumns();
         }
@@ -38,9 +38,9 @@ namespace DummyDatabase.Desktop
         {
             string schemeDataName = WorkWithFiles.GetSchemeDataName(scheme.Name);
             string dataFolderPath = WorkWithFiles.GetFolderPath("data");
-            if (File.Exists(dataFolderPath + $"\\{schemeDataName}"))
+            if (File.Exists($"{dataFolderPath}\\{schemeDataName}"))
             {
-                schemeDataRows.ItemsSource = new SchemeData(scheme, dataFolderPath + $"\\{schemeDataName}").Rows;
+                schemeDataRows.ItemsSource = new SchemeData(scheme, $"{dataFolderPath}\\{schemeDataName}").Rows;
             }
             else
             {

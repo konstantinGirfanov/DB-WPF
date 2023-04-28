@@ -22,7 +22,7 @@ namespace DummyDatabase.Core
 
             foreach (string columnValue in Data.Values.Cast<string>())
             {
-                sb.Append(columnValue + "   ");
+                sb.Append($"{columnValue}   ");
             }
 
             return sb.ToString();
