@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Input;
 using DummyDatabase.Core;
 
@@ -45,6 +46,42 @@ namespace DummyDatabase.Desktop
             else
             {
                 schemeDataRows.ItemsSource = new List<string>() { "Данные не найдены." };
+            }
+        }
+
+        private void SchemeDataRowsMouseWheel(object sender, MouseWheelEventArgs e)
+        {
+            if(e.Delta > 0)
+            {
+                dataScroller.LineUp();
+            }
+            else
+            {
+                dataScroller.LineDown();
+            }
+        }
+
+        private void SchemeColumnsListPreviewMouseWheel(object sender, MouseWheelEventArgs e)
+        {
+            if (e.Delta > 0)
+            {
+                columnsScroller.LineUp();
+            }
+            else
+            {
+                columnsScroller.LineDown();
+            }
+        }
+
+        private void SchemeListPreviewMouseWheel(object sender, MouseWheelEventArgs e)
+        {
+            if (e.Delta > 0)
+            {
+                schemesScroller.LineUp();
+            }
+            else
+            {
+                schemesScroller.LineDown();
             }
         }
     }

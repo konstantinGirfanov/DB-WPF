@@ -46,18 +46,18 @@
 
             <TextBlock Text="Какую таблицу открыть?" FontSize="15" Grid.Row="1"/>
 
-            <ScrollViewer Grid.Row="2" Margin="0 0 0 0">
-                <ListBox x:Name="schemeList" MouseDoubleClick="LoadScheme"></ListBox>
+            <ScrollViewer Grid.Row="2" Margin="0 0 0 0" Name="schemesScroller">
+                <ListBox x:Name="schemeList" MouseDoubleClick="LoadScheme" PreviewMouseWheel="SchemeListPreviewMouseWheel"></ListBox>
             </ScrollViewer>
         </Grid>
 
-        <ScrollViewer Grid.Row="1" Grid.Column="0">
-            <ListBox x:Name="schemeColumnsList"></ListBox>
+        <ScrollViewer Grid.Row="1" Grid.Column="0" Name="columnsScroller">
+            <ListBox x:Name="schemeColumnsList" PreviewMouseWheel="SchemeColumnsListPreviewMouseWheel"></ListBox>
         </ScrollViewer>
 
         <TextBlock Text="Имеющиеся строки данных:" FontSize="15" Grid.Column="1"/>
-        <ScrollViewer Grid.Column="1" Grid.RowSpan="2" Margin="0 25 0 0">
-            <ListBox x:Name="schemeDataRows"></ListBox>
+        <ScrollViewer Grid.Column="1" Grid.RowSpan="2" Margin="0 25 0 0" Name="dataScroller">
+            <ListBox x:Name="schemeDataRows" PreviewMouseWheel="SchemeDataRowsMouseWheel"></ListBox>
         </ScrollViewer>
 
 
