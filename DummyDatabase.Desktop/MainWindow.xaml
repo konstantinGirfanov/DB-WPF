@@ -17,10 +17,39 @@
             <RowDefinition></RowDefinition>
         </Grid.RowDefinitions>
 
-        <TextBlock Text="Какую таблицу открыть?" FontSize="15"/>
-        <ScrollViewer Grid.Row="0" Grid.Column="0" Margin="0 25 0 0">
-            <ListBox x:Name="schemeList" MouseDoubleClick="LoadScheme"></ListBox>
-        </ScrollViewer>
+        <Grid Grid.Column="0" Grid.Row="0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="0.15*"></RowDefinition>
+                <RowDefinition Height="0.18*"></RowDefinition>
+                <RowDefinition></RowDefinition>
+            </Grid.RowDefinitions>
+
+            <Menu>
+                <MenuItem Header="Редактирование" FontSize="15">
+                    <MenuItem  FontSize="15" Header="Создание БД" />
+
+                    <MenuItem FontSize="15" Header="Редактирование">
+                        <MenuItem FontSize="15" Header="Таблица">
+                            <MenuItem FontSize="15" Header="Переименовать таблицу"/>
+                            <MenuItem FontSize="15" Header="Переименовать столбец"/>
+                            <MenuItem FontSize="15" Header="Добавить столбец"/>
+                            <MenuItem FontSize="15" Header="Удалить столбец"/>
+                        </MenuItem>
+                        <MenuItem FontSize="15" Header="Данные">
+                            <MenuItem FontSize="15" Header="Новая строка"/>
+                            <MenuItem FontSize="15" Header="Удалить строку"/>
+                            <MenuItem FontSize="15" Header="Отредактировать строку"/>
+                        </MenuItem>
+                    </MenuItem>
+                </MenuItem>
+            </Menu>
+
+            <TextBlock Text="Какую таблицу открыть?" FontSize="15" Grid.Row="1"/>
+
+            <ScrollViewer Grid.Row="2" Margin="0 0 0 0">
+                <ListBox x:Name="schemeList" MouseDoubleClick="LoadScheme"></ListBox>
+            </ScrollViewer>
+        </Grid>
 
         <ScrollViewer Grid.Row="1" Grid.Column="0">
             <ListBox x:Name="schemeColumnsList"></ListBox>
@@ -30,5 +59,7 @@
         <ScrollViewer Grid.Column="1" Grid.RowSpan="2" Margin="0 25 0 0">
             <ListBox x:Name="schemeDataRows"></ListBox>
         </ScrollViewer>
+
+
     </Grid>
 </Window>
