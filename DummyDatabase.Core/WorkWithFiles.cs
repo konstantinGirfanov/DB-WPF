@@ -17,12 +17,12 @@
 
         public static string GetFolderPath(string folderName)
         {
-            return Directory.GetParent(Directory.GetCurrentDirectory()).Parent.Parent.FullName + $"\\{folderName}";
+            return $"{Directory.GetParent(Directory.GetCurrentDirectory()).Parent.Parent.FullName}\\{folderName}";
         }
 
         public static string GetSchemeDataName(string schemeName)
         {
-            return schemeName.Split('.')[0] + "Data.txt";
+            return $"{schemeName.Split('.')[0]}Data.txt";
         }
     }
 }
