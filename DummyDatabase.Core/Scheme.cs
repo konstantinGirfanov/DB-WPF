@@ -26,7 +26,7 @@ namespace DummyDatabase.Core
             columns.Add("Список столбцов таблицы:");
             foreach (SchemeColumn column in Columns)
             {
-                columns.Add($"{column.Name} - {column.Type} - {column.IsPrimary}");
+                columns.Add($"{column.Name} - {column.Type} - Primary: {column.IsPrimary}");
             }
 
             return columns;
