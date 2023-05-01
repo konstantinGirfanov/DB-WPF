@@ -11,4 +11,9 @@
     <ProjectReference Include="..\DummyDatabase.Core\DummyDatabase.Core.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="windows for editing\columns\" />
+    <Folder Include="windows for editing\data\" />
+  </ItemGroup>
+
 </Project>

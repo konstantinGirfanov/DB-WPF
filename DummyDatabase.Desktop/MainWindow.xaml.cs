@@ -4,6 +4,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using DummyDatabase.Core;
+using DummyDatabase.Desktop.windows_for_editing.scheme;
 
 namespace DummyDatabase.Desktop
 {
@@ -83,6 +84,15 @@ namespace DummyDatabase.Desktop
             {
                 schemesScroller.LineDown();
             }
+        }
+
+        private void MenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            Window1 window = new();
+            window.Show();
+            window.Owner = this;
+
+
         }
     }
 }
