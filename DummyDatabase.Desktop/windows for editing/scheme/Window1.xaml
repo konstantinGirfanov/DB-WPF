@@ -1,9 +1,9 @@
-﻿<Window x:Class="DummyDatabase.Desktop.windows_for_editing.scheme.Window1"
+﻿<Window x:Class="DummyDatabase.Desktop.WindowsForEditing.Scheme.Window1"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:DummyDatabase.Desktop.windows_for_editing.scheme"
+        xmlns:local="clr-namespace:DummyDatabase.Desktop.WindowsForEditing.Scheme"
         mc:Ignorable="d"
         Title="Window1" Height="450" Width="900">
     <Grid>
@@ -50,8 +50,8 @@
             <Button Grid.Column="1" Height="25" Width="150"
                     Content="Добавить столбец" FontSize="15"
                     HorizontalAlignment="Left" VerticalAlignment="Top"
-                    Click="CreateColumn" />
-            <ScrollViewer Grid.Row="2" Grid.ColumnSpan="2" PreviewMouseWheel="ColumnsScrollViewerScroll" Name="columnsScroller">
+                    Click="CreateGridForColumn" />
+            <ScrollViewer Grid.Row="2" Grid.ColumnSpan="2" PreviewMouseWheel="ColumnsScrollerScroll" Name="columnsScroller">
                 <ListBox Name="columnsList"/>
             </ScrollViewer>
         </Grid>

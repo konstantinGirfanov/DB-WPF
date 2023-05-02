@@ -1,23 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
 using System.Text.Json;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Controls.Primitives;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 using DummyDatabase.Core;
-using static System.Net.Mime.MediaTypeNames;
 
-namespace DummyDatabase.Desktop.windows_for_editing.scheme
+namespace DummyDatabase.Desktop.WindowsForEditing.Scheme
 {
     /// <summary>
     /// Логика взаимодействия для Window1.xaml
@@ -29,122 +18,112 @@ namespace DummyDatabase.Desktop.windows_for_editing.scheme
             InitializeComponent();
         }
 
-        private void CreateColumn(object sender, RoutedEventArgs e)
+        private void CreateGridForColumn(object sender, RoutedEventArgs e)
         {
-            Grid column = CreateGrid();
-            columnsList.Items.Add(column);
-        }
-
-        private void ColumnsScrollViewerScroll(object sender, MouseWheelEventArgs e)
-        {
-            if (e.Delta > 0)
-            {
-                columnsScroller.LineUp();
-            }
-            else
-            {
-                columnsScroller.LineDown();
-            }
+            Grid gridForColumn = CreateGrid();
+            columnsList.Items.Add(gridForColumn);
         }
 
         private Grid CreateGrid()
         {
-            Grid grid = new Grid();
+            Grid gridForColumn = new Grid();
 
             for (int i = 0; i < 7; i++)
             {
-                grid.ColumnDefinitions.Add(new ColumnDefinition());
+                gridForColumn.ColumnDefinitions.Add(new ColumnDefinition());
             }
 
             TextBlock name = new();
             name.Text = "Имя столбца:";
-            TextBox ColumnName = new();
-            ColumnName.Width = 100;
+            gridForColumn.Children.Add(name);
+            Grid.SetColumn(name, 0);
+
+            TextBox columnName = new();
+            columnName.Width = 100;
+            gridForColumn.Children.Add(columnName);
+            Grid.SetColumn(columnName, 1);
 
             TextBlock type = new();
             type.Text = "Тип столбца:";
-            TextBox ColumnType = new();
-            ColumnType.Width = 100;
+            gridForColumn.Children.Add(type);
+            Grid.SetColumn(type, 2);
 
-            TextBlock primary = new();
-            primary.Text = "Это главный столбец?";
-            CheckBox isPrimary = new();
-            isPrimary.Width = 30;
+            TextBox columnType = new();
+            columnType.Width = 100;
+            gridForColumn.Children.Add(columnType);
+            Grid.SetColumn(columnType, 3);
+
+            TextBlock isPrimary = new();
+            isPrimary.Text = "Это главный столбец?";
+            gridForColumn.Children.Add(isPrimary);
+            Grid.SetColumn(isPrimary, 4);
+
+            CheckBox isPrimaryColumn = new();
+            isPrimaryColumn.Width = 30;
+            gridForColumn.Children.Add(isPrimaryColumn);
+            Grid.SetColumn(isPrimaryColumn, 5);
 
             Button deleteButton = new();
-            deleteButton.Name = "knopka";
-            
             deleteButton.Width = 60;
             deleteButton.Content = "Удалить";
             deleteButton.Click += DeleteColumn;
-
-            grid.Children.Add(name);
-            grid.Children.Add(ColumnName);
-            grid.Children.Add(type);
-            grid.Children.Add(ColumnType);
-            grid.Children.Add(primary);
-            grid.Children.Add(isPrimary);
-            grid.Children.Add(deleteButton);
-
-            Grid.SetColumn(name, 0);
-            Grid.SetColumn(ColumnName, 1);
-            Grid.SetColumn(type, 2);
-            Grid.SetColumn(ColumnType, 3);
-            Grid.SetColumn(primary, 4);
-            Grid.SetColumn(isPrimary, 5);
+            gridForColumn.Children.Add(deleteButton);
             Grid.SetColumn(deleteButton, 6);
 
-            return grid;
+            return gridForColumn;
         }
 
         private void DeleteColumn(object sender, RoutedEventArgs e)
         {
-            Grid buttonParent =  (Grid)(((Button)e.Source).Parent);
+            Grid buttonParent = (Grid)((Button)e.Source).Parent;
             columnsList.Items.Remove(buttonParent);
         }
 
         private void CreateScheme(object sender, RoutedEventArgs e)
         {
-            Scheme newScheme = new();
-
             if (IsAbleToCreate())
             {
+                Core.Scheme newScheme = new();
                 newScheme.Name = schemeName.Text;
 
-                List<SchemeColumn> columns = new();
+                List<SchemeColumn> newSchemeColumns = new();
 
-                var gridColumns = columnsList.Items;
-                foreach (Grid gridColumn in gridColumns)
+                ItemCollection columnGrids = columnsList.Items;
+                foreach (Grid gridForColumn in columnGrids)
                 {
-                    TextBox name = (TextBox)gridColumn.Children[1];
-                    TextBox type = (TextBox)gridColumn.Children[3];
-                    CheckBox isPrimary = (CheckBox)gridColumn.Children[5];
+                    TextBox columnName = (TextBox)gridForColumn.Children[1];
+                    TextBox columnType = (TextBox)gridForColumn.Children[3];
+                    CheckBox isPrimaryColumn = (CheckBox)gridForColumn.Children[5];
 
-                    if(isPrimary.IsChecked == true)
+                    if (isPrimaryColumn.IsChecked == true)
                     {
-                        columns.Add(new SchemeColumn(name.Text, type.Text, true));
+                        newSchemeColumns.Add(new SchemeColumn(columnName.Text, columnType.Text, true));
                     }
                     else
                     {
-                        columns.Add(new SchemeColumn(name.Text, type.Text, false));
+                        newSchemeColumns.Add(new SchemeColumn(columnName.Text, columnType.Text, false));
                     }
                 }
-                newScheme.Columns = columns.ToArray();
+                newScheme.Columns = newSchemeColumns.ToArray();
 
-                string s = JsonSerializer.Serialize(newScheme);
+                string schemeJSON = JsonSerializer.Serialize(newScheme);
 
-                string schemeFolderPath = WorkWithFiles.GetFolderPath("schemes");
-                string filePath = $"{schemeFolderPath}\\{newScheme.Name}.json";
+                string schemesFolderPath = WorkWithFiles.GetFolderPath("schemes");
+                string newSchemePath = $"{schemesFolderPath}\\{newScheme.Name}.json";
 
-
-                using (StreamWriter writer = new StreamWriter(filePath, false))
+                if(!File.Exists(newSchemePath))
                 {
-                    writer.Write(s);
+                    File.WriteAllText(newSchemePath, schemeJSON);
+                    MessageBox.Show("Схема добавлена");
+                }
+                else
+                {
+                    MessageBox.Show("Схема уже существует");
                 }
             }
             else
             {
-                MessageBox.Show("aboba");
+                MessageBox.Show("Ошибка");
             }
         }
 
@@ -152,21 +131,21 @@ namespace DummyDatabase.Desktop.windows_for_editing.scheme
         {
             if (schemeName.Text != "")
             {
-                var gridColumns = columnsList.Items;
+                ItemCollection gridColumns = columnsList.Items;
                 bool IsAbleToCreate = true;
                 int countPrimaryColumns = 0;
 
                 foreach (Grid gridColumn in gridColumns)
                 {
-                    TextBox name = (TextBox)gridColumn.Children[1];
-                    if(name.Text == "")
+                    TextBox columnName = (TextBox)gridColumn.Children[1];
+                    if (columnName.Text == "")
                     {
                         IsAbleToCreate = false;
                         break;
                     }
 
-                    TextBox type = (TextBox)gridColumn.Children[3];
-                    switch(type.Text)
+                    TextBox columnType = (TextBox)gridColumn.Children[3];
+                    switch (columnType.Text)
                     {
                         case "int":
                             break;
@@ -185,14 +164,14 @@ namespace DummyDatabase.Desktop.windows_for_editing.scheme
                             break;
                     }
 
-                    CheckBox isPrimary = (CheckBox)gridColumn.Children[5];
-                    if(isPrimary.IsChecked == true)
+                    CheckBox isPrimaryColumn = (CheckBox)gridColumn.Children[5];
+                    if (isPrimaryColumn.IsChecked == true)
                     {
                         countPrimaryColumns++;
                     }
                 }
 
-                if(countPrimaryColumns != 1 || gridColumns.Count < 1)
+                if (countPrimaryColumns != 1 || gridColumns.Count < 1)
                 {
                     IsAbleToCreate = false;
                 }
@@ -202,6 +181,17 @@ namespace DummyDatabase.Desktop.windows_for_editing.scheme
             else
             {
                 return false;
+            }
+        }
+        private void ColumnsScrollerScroll(object sender, MouseWheelEventArgs e)
+        {
+            if (e.Delta > 0)
+            {
+                columnsScroller.LineUp();
+            }
+            else
+            {
+                columnsScroller.LineDown();
             }
         }
     }
