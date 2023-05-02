@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:DummyDatabase.Desktop.windows_for_editing.scheme"
         mc:Ignorable="d"
-        Title="Window1" Height="450" Width="800">
+        Title="Window1" Height="450" Width="900">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="30"/>
@@ -51,7 +51,7 @@
                     Content="Добавить столбец" FontSize="15"
                     HorizontalAlignment="Left" VerticalAlignment="Top"
                     Click="CreateColumn" />
-            <ScrollViewer Grid.Row="2" Grid.ColumnSpan="2" PreviewMouseWheel="ScrollViewer_PreviewMouseWheel" Name="columnsScroller">
+            <ScrollViewer Grid.Row="2" Grid.ColumnSpan="2" PreviewMouseWheel="ColumnsScrollViewerScroll" Name="columnsScroller">
                 <ListBox Name="columnsList"/>
             </ScrollViewer>
         </Grid>

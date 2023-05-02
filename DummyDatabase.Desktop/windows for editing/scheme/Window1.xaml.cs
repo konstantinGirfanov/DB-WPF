@@ -31,11 +31,11 @@ namespace DummyDatabase.Desktop.windows_for_editing.scheme
 
         private void CreateColumn(object sender, RoutedEventArgs e)
         {
-            Grid column = CreateGrid(columnsList.Items.Count);
+            Grid column = CreateGrid();
             columnsList.Items.Add(column);
         }
 
-        private void ScrollViewer_PreviewMouseWheel(object sender, MouseWheelEventArgs e)
+        private void ColumnsScrollViewerScroll(object sender, MouseWheelEventArgs e)
         {
             if (e.Delta > 0)
             {
@@ -47,10 +47,9 @@ namespace DummyDatabase.Desktop.windows_for_editing.scheme
             }
         }
 
-        private Grid CreateGrid(int number)
+        private Grid CreateGrid()
         {
             Grid grid = new Grid();
-            grid.Name = $"number{number}";
 
             for (int i = 0; i < 7; i++)
             {
@@ -73,6 +72,8 @@ namespace DummyDatabase.Desktop.windows_for_editing.scheme
             isPrimary.Width = 30;
 
             Button deleteButton = new();
+            deleteButton.Name = "knopka";
+            
             deleteButton.Width = 60;
             deleteButton.Content = "Удалить";
             deleteButton.Click += DeleteColumn;
@@ -98,14 +99,15 @@ namespace DummyDatabase.Desktop.windows_for_editing.scheme
 
         private void DeleteColumn(object sender, RoutedEventArgs e)
         {
-            //тут должно быть удаление столбца но я пока не разобрался
+            Grid buttonParent =  (Grid)(((Button)e.Source).Parent);
+            columnsList.Items.Remove(buttonParent);
         }
 
         private void CreateScheme(object sender, RoutedEventArgs e)
         {
             Scheme newScheme = new();
 
-            if(IsAbleToCreate())
+            if (IsAbleToCreate())
             {
                 newScheme.Name = schemeName.Text;
 
@@ -131,10 +133,11 @@ namespace DummyDatabase.Desktop.windows_for_editing.scheme
 
                 string s = JsonSerializer.Serialize(newScheme);
 
-                string path = $"{newScheme.Name}.txt";
+                string schemeFolderPath = WorkWithFiles.GetFolderPath("schemes");
+                string filePath = $"{schemeFolderPath}\\{newScheme.Name}.json";
 
 
-                using (StreamWriter writer = new StreamWriter(path, false))
+                using (StreamWriter writer = new StreamWriter(filePath, false))
                 {
                     writer.Write(s);
                 }
