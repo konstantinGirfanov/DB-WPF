@@ -4,7 +4,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using DummyDatabase.Core;
-using DummyDatabase.Desktop.windows_for_editing.data;
+using DummyDatabase.Desktop.WindowsForEditing.Columns;
 using DummyDatabase.Desktop.WindowsForEditing.Scheme;
 
 namespace DummyDatabase.Desktop
@@ -89,14 +89,14 @@ namespace DummyDatabase.Desktop
 
         private void OpenWindowForDBCreate(object sender, RoutedEventArgs e)
         {
-            Window1 window = new();
+            CreatingNewDB window = new();
             window.Show();
             window.Owner = this;
         }
 
         private void OpenWindowForColumnEditing(object sender, RoutedEventArgs e)
         {
-            Редактирование_таблиц window = new();
+            TablesEiditing window = new();
             window.Show();
             window.Owner = this;
         }

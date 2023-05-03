@@ -11,9 +11,9 @@ namespace DummyDatabase.Desktop.WindowsForEditing.Scheme
     /// <summary>
     /// Логика взаимодействия для Window1.xaml
     /// </summary>
-    public partial class Window1 : Window
+    public partial class CreatingNewDB : Window
     {
-        public Window1()
+        public CreatingNewDB()
         {
             InitializeComponent();
         }
@@ -79,33 +79,11 @@ namespace DummyDatabase.Desktop.WindowsForEditing.Scheme
             columnsList.Items.Remove(buttonParent);
         }
 
-        private void CreateScheme(object sender, RoutedEventArgs e)
+        private void AddNewSchemeToFolder(object sender, RoutedEventArgs e)
         {
             if (IsAbleToCreate())
             {
-                Core.Scheme newScheme = new();
-                newScheme.Name = schemeName.Text;
-
-                List<SchemeColumn> newSchemeColumns = new();
-
-                ItemCollection columnGrids = columnsList.Items;
-                foreach (Grid gridForColumn in columnGrids)
-                {
-                    TextBox columnName = (TextBox)gridForColumn.Children[1];
-                    TextBox columnType = (TextBox)gridForColumn.Children[3];
-                    CheckBox isPrimaryColumn = (CheckBox)gridForColumn.Children[5];
-
-                    if (isPrimaryColumn.IsChecked == true)
-                    {
-                        newSchemeColumns.Add(new SchemeColumn(columnName.Text, columnType.Text, true));
-                    }
-                    else
-                    {
-                        newSchemeColumns.Add(new SchemeColumn(columnName.Text, columnType.Text, false));
-                    }
-                }
-                newScheme.Columns = newSchemeColumns.ToArray();
-
+                Core.Scheme newScheme = CreateSchemeFromListBox();
                 string schemeJSON = JsonSerializer.Serialize(newScheme);
 
                 string schemesFolderPath = WorkWithFiles.GetFolderPath("schemes");
@@ -129,6 +107,34 @@ namespace DummyDatabase.Desktop.WindowsForEditing.Scheme
             {
                 MessageBox.Show("Ошибка");
             }
+        }
+
+        private Core.Scheme CreateSchemeFromListBox()
+        {
+            Core.Scheme scheme = new();
+            scheme.Name = schemeName.Text;
+
+            List<SchemeColumn> newSchemeColumns = new();
+
+            ItemCollection columnGrids = columnsList.Items;
+            foreach (Grid gridForColumn in columnGrids)
+            {
+                TextBox columnName = (TextBox)gridForColumn.Children[1];
+                TextBox columnType = (TextBox)gridForColumn.Children[3];
+                CheckBox isPrimaryColumn = (CheckBox)gridForColumn.Children[5];
+
+                if (isPrimaryColumn.IsChecked == true)
+                {
+                    newSchemeColumns.Add(new SchemeColumn(columnName.Text, columnType.Text, true));
+                }
+                else
+                {
+                    newSchemeColumns.Add(new SchemeColumn(columnName.Text, columnType.Text, false));
+                }
+            }
+            scheme.Columns = newSchemeColumns.ToArray();
+
+            return scheme;
         }
 
         private bool IsAbleToCreate()
@@ -189,6 +195,7 @@ namespace DummyDatabase.Desktop.WindowsForEditing.Scheme
                 return false;
             }
         }
+
         private void ColumnsScrollerScroll(object sender, MouseWheelEventArgs e)
         {
             if (e.Delta > 0)
