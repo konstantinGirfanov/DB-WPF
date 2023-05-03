@@ -26,7 +26,7 @@
 
             <Menu>
                 <MenuItem Header="Редактирование" FontSize="15">
-                    <MenuItem  FontSize="15" Header="Создание БД" Click="MenuItem_Click"/>
+                    <MenuItem  FontSize="15" Header="Создание БД" Click="OpenWindowForDBCreate"/>
 
                     <MenuItem FontSize="15" Header="Редактирование">
                         <MenuItem FontSize="15" Header="Таблица">

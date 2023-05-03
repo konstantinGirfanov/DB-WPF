@@ -111,14 +111,18 @@ namespace DummyDatabase.Desktop.WindowsForEditing.Scheme
                 string schemesFolderPath = WorkWithFiles.GetFolderPath("schemes");
                 string newSchemePath = $"{schemesFolderPath}\\{newScheme.Name}.json";
 
-                if(!File.Exists(newSchemePath))
+                if (!File.Exists(newSchemePath))
                 {
                     File.WriteAllText(newSchemePath, schemeJSON);
+
+                    // Обновление листбокса в главном окне, который содержит список схем из папки.
+                    ((ListBox)((ScrollViewer)((Grid)((Grid)this.Owner.Content).Children[0]).Children[2]).Content).ItemsSource = WorkWithFiles.GetFolderFiles("schemes");
+
                     MessageBox.Show("Схема добавлена");
                 }
                 else
                 {
-                    MessageBox.Show("Схема уже существует");
+                    MessageBox.Show("Схема с таким названием уже существует");
                 }
             }
             else
@@ -131,6 +135,7 @@ namespace DummyDatabase.Desktop.WindowsForEditing.Scheme
         {
             if (schemeName.Text != "")
             {
+                List<string> columnNames = new();
                 ItemCollection gridColumns = columnsList.Items;
                 bool IsAbleToCreate = true;
                 int countPrimaryColumns = 0;
@@ -138,11 +143,12 @@ namespace DummyDatabase.Desktop.WindowsForEditing.Scheme
                 foreach (Grid gridColumn in gridColumns)
                 {
                     TextBox columnName = (TextBox)gridColumn.Children[1];
-                    if (columnName.Text == "")
+                    if (columnName.Text == "" || columnNames.Contains(columnName.Text))
                     {
                         IsAbleToCreate = false;
                         break;
                     }
+                    columnNames.Add(columnName.Text);
 
                     TextBox columnType = (TextBox)gridColumn.Children[3];
                     switch (columnType.Text)

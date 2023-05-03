@@ -86,13 +86,11 @@ namespace DummyDatabase.Desktop
             }
         }
 
-        private void MenuItem_Click(object sender, RoutedEventArgs e)
+        private void OpenWindowForDBCreate(object sender, RoutedEventArgs e)
         {
             Window1 window = new();
             window.Show();
             window.Owner = this;
-
-
         }
     }
 }
