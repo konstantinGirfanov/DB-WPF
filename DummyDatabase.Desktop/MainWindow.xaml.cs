@@ -4,6 +4,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using DummyDatabase.Core;
+using DummyDatabase.Desktop.windows_for_editing.data;
 using DummyDatabase.Desktop.WindowsForEditing.Scheme;
 
 namespace DummyDatabase.Desktop
@@ -29,7 +30,7 @@ namespace DummyDatabase.Desktop
 
         private void LoadColumns()
         {
-            var schemesPath = WorkWithFiles.GetFolderPath("schemes");
+            string schemesPath = WorkWithFiles.GetFolderPath("schemes");
             string schemeName = schemeList.SelectedItem.ToString();
             scheme = WorkWithScheme.ReadScheme($"{schemesPath}\\{schemeName}");
 
@@ -89,6 +90,13 @@ namespace DummyDatabase.Desktop
         private void OpenWindowForDBCreate(object sender, RoutedEventArgs e)
         {
             Window1 window = new();
+            window.Show();
+            window.Owner = this;
+        }
+
+        private void OpenWindowForColumnEditing(object sender, RoutedEventArgs e)
+        {
+            Редактирование_таблиц window = new();
             window.Show();
             window.Owner = this;
         }

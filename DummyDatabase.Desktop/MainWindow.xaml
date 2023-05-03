@@ -29,7 +29,7 @@
                     <MenuItem  FontSize="15" Header="Создание БД" Click="OpenWindowForDBCreate"/>
 
                     <MenuItem FontSize="15" Header="Редактирование">
-                        <MenuItem FontSize="15" Header="Таблица" />
+                        <MenuItem FontSize="15" Header="Таблица" Click="OpenWindowForColumnEditing"/>
                         <MenuItem FontSize="15" Header="Данные" />
                     </MenuItem>
                 </MenuItem>

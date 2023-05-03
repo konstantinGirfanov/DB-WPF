@@ -13,7 +13,6 @@
 
   <ItemGroup>
     <Folder Include="windows for editing\columns\" />
-    <Folder Include="windows for editing\data\" />
   </ItemGroup>
 
 </Project>
