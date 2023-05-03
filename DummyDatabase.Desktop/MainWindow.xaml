@@ -29,17 +29,8 @@
                     <MenuItem  FontSize="15" Header="Создание БД" Click="OpenWindowForDBCreate"/>
 
                     <MenuItem FontSize="15" Header="Редактирование">
-                        <MenuItem FontSize="15" Header="Таблица">
-                            <MenuItem FontSize="15" Header="Переименовать таблицу"/>
-                            <MenuItem FontSize="15" Header="Переименовать столбец"/>
-                            <MenuItem FontSize="15" Header="Добавить столбец"/>
-                            <MenuItem FontSize="15" Header="Удалить столбец"/>
-                        </MenuItem>
-                        <MenuItem FontSize="15" Header="Данные">
-                            <MenuItem FontSize="15" Header="Новая строка"/>
-                            <MenuItem FontSize="15" Header="Удалить строку"/>
-                            <MenuItem FontSize="15" Header="Отредактировать строку"/>
-                        </MenuItem>
+                        <MenuItem FontSize="15" Header="Таблица" />
+                        <MenuItem FontSize="15" Header="Данные" />
                     </MenuItem>
                 </MenuItem>
             </Menu>
