@@ -1,17 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 using DummyDatabase.Core;
 
 namespace DummyDatabase.Desktop.windows_for_editing.columns
@@ -22,6 +14,7 @@ namespace DummyDatabase.Desktop.windows_for_editing.columns
     public partial class DataEditing : Window
     {
         Scheme currentScheme;
+
         public DataEditing()
         {
             InitializeComponent();
@@ -46,51 +39,61 @@ namespace DummyDatabase.Desktop.windows_for_editing.columns
             if (File.Exists($"{dataFolderPath}\\{schemeDataName}"))
             {
                 List<Row> dataList = new SchemeData(currentScheme, $"{dataFolderPath}\\{schemeDataName}").Rows;
-                
-                foreach(Row row in dataList)
+
+                foreach (Row row in dataList)
                 {
-                    dataTree.Items.Add(CreateDataRow(row));
+                    dataTree.Items.Add(CreateDataRowTreeItem(row));
                 }
             }
         }
 
-        private void ScrollSchemeListScroller(object sender, MouseWheelEventArgs e)
+        private void UpdateData(object sender, RoutedEventArgs e)
         {
-            if(e.Delta > 0)
+            StringBuilder sb = new();
+            foreach (TreeViewItem item in dataTree.Items)
             {
-                schemeListScroller.LineUp();
+                for (int i = 0; i < item.Items.Count - 1; i++)
+                {
+                    if (i + 2 != item.Items.Count)
+                    {
+                        Grid gridRow = (Grid)item.Items[i];
+                        sb.Append($"{((TextBox)(gridRow.Children[1])).Text};");
+                    }
+                    else
+                    {
+                        Grid gridRow = (Grid)item.Items[i];
+                        sb.Append($"{((TextBox)(gridRow.Children[1])).Text}");
+                    }
+                }
+                sb.AppendLine();
+            }
+
+            string schemeDataName = WorkWithFiles.GetSchemeDataName(currentScheme.Name);
+            string dataFolderPath = WorkWithFiles.GetFolderPath("data");
+            File.WriteAllText($"{dataFolderPath}\\{schemeDataName}", sb.ToString());
+
+            ReloadMainWindowData($"{dataFolderPath}\\{schemeDataName}");
+
+            MessageBox.Show("Данные перезаписаны");
+        }
+
+        private void ReloadMainWindowData(string dataPath)
+        {
+            if (File.Exists(dataPath))
+            {
+                ((ListBox)((ScrollViewer)((Grid)this.Owner.Content).Children[3]).Content).ItemsSource = new SchemeData(currentScheme, dataPath).Rows;
             }
             else
             {
-                schemeListScroller.LineDown();
-
+                ((ListBox)((ScrollViewer)((Grid)this.Owner.Content).Children[3]).Content).ItemsSource = new List<string>() { "Данные не найдены." };
             }
         }
-
-        private void ScrollDataListScroller(object sender, MouseWheelEventArgs e)
-        {
-            if(e.Delta > 0)
-            {
-                dataScroller.LineUp();
-            }
-            else
-            {
-                dataScroller.LineDown();
-            }
-        }
-
-        private void AddEmptyDataRow(object sender, RoutedEventArgs e)
-        {
-            Row emptyRow = Row.CreateEmptyRowData(currentScheme);
-            dataTree.Items.Add(CreateDataRow(emptyRow));
-        }
-
-        private TreeViewItem CreateDataRow(Row dataRow)
+        private TreeViewItem CreateDataRowTreeItem(Row dataRow)
         {
             TreeViewItem row = new();
             row.Header = $"Cтрока данных";
 
-            foreach(KeyValuePair<SchemeColumn, object> pair in dataRow.Data)
+            foreach (KeyValuePair<SchemeColumn, object> pair in dataRow.Data)
             {
                 Grid rowGrid = new();
                 rowGrid.ColumnDefinitions.Add(new ColumnDefinition());
@@ -124,6 +127,37 @@ namespace DummyDatabase.Desktop.windows_for_editing.columns
         {
             TreeViewItem buttonParent = (TreeViewItem)((Button)e.Source).Parent;
             dataTree.Items.Remove(buttonParent);
+        }
+
+        private void AddEmptyDataRow(object sender, RoutedEventArgs e)
+        {
+            Row emptyRow = Row.CreateEmptyRowData(currentScheme);
+            dataTree.Items.Add(CreateDataRowTreeItem(emptyRow));
+        }
+
+        private void ScrollSchemeListScroller(object sender, MouseWheelEventArgs e)
+        {
+            if (e.Delta > 0)
+            {
+                schemeListScroller.LineUp();
+            }
+            else
+            {
+                schemeListScroller.LineDown();
+
+            }
+        }
+
+        private void ScrollDataListScroller(object sender, MouseWheelEventArgs e)
+        {
+            if (e.Delta > 0)
+            {
+                dataScroller.LineUp();
+            }
+            else
+            {
+                dataScroller.LineDown();
+            }
         }
     }
 }
