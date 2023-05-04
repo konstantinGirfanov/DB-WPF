@@ -13,6 +13,8 @@ namespace DummyDatabase.Desktop.WindowsForEditing.Columns
     /// </summary>
     public partial class TablesEiditing : Window
     {
+        Core.Scheme currentScheme;
+
         public TablesEiditing()
         {
             InitializeComponent();
@@ -25,10 +27,10 @@ namespace DummyDatabase.Desktop.WindowsForEditing.Columns
 
             string schemesPath = WorkWithFiles.GetFolderPath("schemes");
             string schemeName = schemeList.SelectedItem.ToString();
-            Core.Scheme scheme = WorkWithScheme.ReadScheme($"{schemesPath}\\{schemeName}");
+            currentScheme = WorkWithScheme.ReadScheme($"{schemesPath}\\{schemeName}");
 
             schemeNameBox.Text = schemeName;
-            foreach (SchemeColumn column in scheme.Columns)
+            foreach (SchemeColumn column in currentScheme.Columns)
             {
                 Grid gridForColumn = CreateGridForColumn(column.Name, column.Type, column.IsPrimary);
                 columnsList.Items.Add(gridForColumn);
@@ -141,8 +143,7 @@ namespace DummyDatabase.Desktop.WindowsForEditing.Columns
 
                 File.WriteAllText(newSchemePath, schemeJSON);
 
-                // Обновление листбокса в главном окне, который содержит список схем из папки.
-                ((ListBox)((ScrollViewer)((Grid)((Grid)this.Owner.Content).Children[0]).Children[2]).Content).ItemsSource = WorkWithFiles.GetFolderFiles("schemes");
+                ReloadMainWindowColumns(scheme);
 
                 MessageBox.Show("Схема обновлена");
             }
@@ -150,6 +151,14 @@ namespace DummyDatabase.Desktop.WindowsForEditing.Columns
             {
                 MessageBox.Show("Ошибка");
             }
+        }
+
+        private void ReloadMainWindowColumns(Core.Scheme scheme)
+        {
+            string schemesPath = WorkWithFiles.GetFolderPath("schemes");
+            string schemeName = currentScheme.Name;
+
+            ((ListBox)((ScrollViewer)((Grid)this.Owner.Content).Children[1]).Content).ItemsSource = scheme.GetSchemeColumns();
         }
 
         private Core.Scheme CreateSchemeFromListBox()
