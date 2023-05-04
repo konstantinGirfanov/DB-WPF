@@ -5,10 +5,10 @@ namespace DummyDatabase.Core
     public class Scheme
     {
         [JsonPropertyName("name")]
-        public string Name { get; init; }
+        public string Name { get; set; }
 
         [JsonPropertyName("columns")]
-        public SchemeColumn[] Columns { get; init; }
+        public SchemeColumn[] Columns { get; set; }
 
         public Scheme(string name, SchemeColumn[] columns)
         {

@@ -16,7 +16,7 @@
             string[] data = File.ReadAllLines(path);
             List<Row> rows = new();
 
-            for (int i = 1; i < data.Length; i++)
+            for (int i = 0; i < data.Length; i++)
             {
                 if (WorkWithScheme.IsAbleToAdd(Scheme, rows,data[i]))
                 {

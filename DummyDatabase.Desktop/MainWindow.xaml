@@ -17,18 +17,40 @@
             <RowDefinition></RowDefinition>
         </Grid.RowDefinitions>
 
-        <TextBlock Text="Какую таблицу открыть?" FontSize="15"/>
-        <ScrollViewer Grid.Row="0" Grid.Column="0" Margin="0 25 0 0">
-            <ListBox x:Name="schemeList" MouseDoubleClick="LoadScheme"></ListBox>
-        </ScrollViewer>
+        <Grid Grid.Column="0" Grid.Row="0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="0.15*"></RowDefinition>
+                <RowDefinition Height="0.18*"></RowDefinition>
+                <RowDefinition></RowDefinition>
+            </Grid.RowDefinitions>
 
-        <ScrollViewer Grid.Row="1" Grid.Column="0">
-            <ListBox x:Name="schemeColumnsList"></ListBox>
+            <Menu>
+                <MenuItem Header="Редактирование" FontSize="15">
+                    <MenuItem  FontSize="15" Header="Создание БД" Click="OpenWindowForDBCreate"/>
+
+                    <MenuItem FontSize="15" Header="Редактирование">
+                        <MenuItem FontSize="15" Header="Таблица" Click="OpenWindowForColumnEditing"/>
+                        <MenuItem FontSize="15" Header="Данные" Click="OpenWindowForDataEditing"/>
+                    </MenuItem>
+                </MenuItem>
+            </Menu>
+
+            <TextBlock Text="Какую таблицу открыть?" FontSize="15" Grid.Row="1"/>
+
+            <ScrollViewer Grid.Row="2" Margin="0 0 0 0" Name="schemesScroller">
+                <ListBox x:Name="schemeList" MouseDoubleClick="LoadScheme" PreviewMouseWheel="SchemeListPreviewMouseWheel"></ListBox>
+            </ScrollViewer>
+        </Grid>
+
+        <ScrollViewer Grid.Row="1" Grid.Column="0" Name="columnsScroller">
+            <ListBox x:Name="schemeColumnsList" PreviewMouseWheel="SchemeColumnsListPreviewMouseWheel"></ListBox>
         </ScrollViewer>
 
         <TextBlock Text="Имеющиеся строки данных:" FontSize="15" Grid.Column="1"/>
-        <ScrollViewer Grid.Column="1" Grid.RowSpan="2" Margin="0 25 0 0">
-            <ListBox x:Name="schemeDataRows"></ListBox>
+        <ScrollViewer Grid.Column="1" Grid.RowSpan="2" Margin="0 25 0 0" Name="dataScroller">
+            <ListBox x:Name="schemeDataRows" PreviewMouseWheel="SchemeDataRowsMouseWheel"></ListBox>
         </ScrollViewer>
+
+
     </Grid>
 </Window>

@@ -4,7 +4,7 @@ namespace DummyDatabase.Core
 {
     public class Row
     {
-        private Dictionary<SchemeColumn, object> Data { get; set; } = new Dictionary<SchemeColumn, object>();
+        public Dictionary<SchemeColumn, object> Data { get; set; } = new();
 
         public Row(Scheme scheme, string line)
         {
@@ -14,6 +14,23 @@ namespace DummyDatabase.Core
             {
                 Data.Add(scheme.Columns[i], columnValues[i]);
             }
+        }
+
+        private Row()
+        {
+            Data = new Dictionary<SchemeColumn, object>();
+        }
+
+        public static Row CreateEmptyRowData(Scheme scheme)
+        {
+            Row row = new();
+
+            foreach(SchemeColumn column in scheme.Columns)
+            {
+                row.Data.Add(column, "");
+            }
+
+            return row;
         }
 
         public override string ToString()
