@@ -21,7 +21,7 @@ namespace DummyDatabase.Desktop.windows_for_editing.columns
     /// </summary>
     public partial class DataEditing : Window
     {
-        Scheme scheme;
+        Scheme currentScheme;
         public DataEditing()
         {
             InitializeComponent();
@@ -37,21 +37,19 @@ namespace DummyDatabase.Desktop.windows_for_editing.columns
         {
             string schemesPath = WorkWithFiles.GetFolderPath("schemes");
             string schemeName = schemeList.SelectedItem.ToString();
-            scheme = WorkWithScheme.ReadScheme($"{schemesPath}\\{schemeName}");
+            currentScheme = WorkWithScheme.ReadScheme($"{schemesPath}\\{schemeName}");
 
-            string schemeDataName = WorkWithFiles.GetSchemeDataName(scheme.Name);
+            string schemeDataName = WorkWithFiles.GetSchemeDataName(currentScheme.Name);
             string dataFolderPath = WorkWithFiles.GetFolderPath("data");
 
             dataTree.Items.Clear();
             if (File.Exists($"{dataFolderPath}\\{schemeDataName}"))
             {
-                List<Row> dataList = new SchemeData(scheme, $"{dataFolderPath}\\{schemeDataName}").Rows;
+                List<Row> dataList = new SchemeData(currentScheme, $"{dataFolderPath}\\{schemeDataName}").Rows;
                 
-                int count = 0;
                 foreach(Row row in dataList)
                 {
-                    dataTree.Items.Add(CreateDataRow(row, count));
-                    count++;
+                    dataTree.Items.Add(CreateDataRow(row));
                 }
             }
         }
@@ -81,19 +79,21 @@ namespace DummyDatabase.Desktop.windows_for_editing.columns
             }
         }
 
-        private void Button_Click(object sender, RoutedEventArgs e)
+        private void AddEmptyDataRow(object sender, RoutedEventArgs e)
         {
-
+            Row emptyRow = Row.CreateEmptyRowData(currentScheme);
+            dataTree.Items.Add(CreateDataRow(emptyRow));
         }
 
-        private static TreeViewItem CreateDataRow(Row dataRow, int rowNumber)
+        private TreeViewItem CreateDataRow(Row dataRow)
         {
             TreeViewItem row = new();
-            row.Header = $"{rowNumber} строка";
+            row.Header = $"Cтрока данных";
 
             foreach(KeyValuePair<SchemeColumn, object> pair in dataRow.Data)
             {
                 Grid rowGrid = new();
+                rowGrid.ColumnDefinitions.Add(new ColumnDefinition());
                 rowGrid.ColumnDefinitions.Add(new ColumnDefinition());
                 rowGrid.ColumnDefinitions.Add(new ColumnDefinition());
 
@@ -103,6 +103,7 @@ namespace DummyDatabase.Desktop.windows_for_editing.columns
                 Grid.SetColumn(rowColumnInfo, 0);
 
                 TextBox rowColumnValue = new();
+                rowColumnValue.MinWidth = 30;
                 rowColumnValue.Text = pair.Value.ToString();
                 rowGrid.Children.Add(rowColumnValue);
                 Grid.SetColumn(rowColumnValue, 1);
@@ -110,9 +111,19 @@ namespace DummyDatabase.Desktop.windows_for_editing.columns
                 row.Items.Add(rowGrid);
             }
 
+            Button deleteButton = new();
+            deleteButton.Width = 60;
+            deleteButton.Content = "Удалить";
+            deleteButton.Click += DeleteColumn;
+            row.Items.Add(deleteButton);
+
             return row;
         }
 
-
+        private void DeleteColumn(object sender, RoutedEventArgs e)
+        {
+            TreeViewItem buttonParent = (TreeViewItem)((Button)e.Source).Parent;
+            dataTree.Items.Remove(buttonParent);
+        }
     }
 }
