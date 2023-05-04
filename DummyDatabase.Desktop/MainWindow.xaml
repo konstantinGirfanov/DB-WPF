@@ -30,7 +30,7 @@
 
                     <MenuItem FontSize="15" Header="Редактирование">
                         <MenuItem FontSize="15" Header="Таблица" Click="OpenWindowForColumnEditing"/>
-                        <MenuItem FontSize="15" Header="Данные" />
+                        <MenuItem FontSize="15" Header="Данные" Click="OpenWindowForDataEditing"/>
                     </MenuItem>
                 </MenuItem>
             </Menu>

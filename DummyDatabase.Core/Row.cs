@@ -4,7 +4,7 @@ namespace DummyDatabase.Core
 {
     public class Row
     {
-        private Dictionary<SchemeColumn, object> Data { get; set; } = new Dictionary<SchemeColumn, object>();
+        public Dictionary<SchemeColumn, object> Data { get; set; } = new Dictionary<SchemeColumn, object>();
 
         public Row(Scheme scheme, string line)
         {

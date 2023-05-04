@@ -4,6 +4,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using DummyDatabase.Core;
+using DummyDatabase.Desktop.windows_for_editing.columns;
 using DummyDatabase.Desktop.WindowsForEditing.Columns;
 using DummyDatabase.Desktop.WindowsForEditing.Scheme;
 
@@ -97,6 +98,13 @@ namespace DummyDatabase.Desktop
         private void OpenWindowForColumnEditing(object sender, RoutedEventArgs e)
         {
             TablesEiditing window = new();
+            window.Show();
+            window.Owner = this;
+        }
+
+        private void OpenWindowForDataEditing(object sender, RoutedEventArgs e)
+        {
+            DataEditing window = new();
             window.Show();
             window.Owner = this;
         }
