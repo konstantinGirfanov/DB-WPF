@@ -28,7 +28,7 @@ namespace DummyDatabase.Desktop.WindowsForEditing.Scheme
         {
             Grid gridForColumn = new Grid();
 
-            for (int i = 0; i < 7; i++)
+            for (int i = 0; i < 9; i++)
             {
                 gridForColumn.ColumnDefinitions.Add(new ColumnDefinition());
             }
@@ -63,16 +63,77 @@ namespace DummyDatabase.Desktop.WindowsForEditing.Scheme
             gridForColumn.Children.Add(isPrimaryColumn);
             Grid.SetColumn(isPrimaryColumn, 5);
 
+            TextBlock isForeignKeyTextBlock = new();
+            isForeignKeyTextBlock.Text = "Внешний ключ?";
+            gridForColumn.Children.Add(isForeignKeyTextBlock);
+            Grid.SetColumn(isForeignKeyTextBlock, 6);
+
+            CheckBox isForeignKey = new();
+            isForeignKey.Width = 30;
+            isForeignKey.Click += IsForeignKey_Click;
+            gridForColumn.Children.Add(isForeignKey);
+            Grid.SetColumn(isForeignKey, 7);
+
             Button deleteButton = new();
             deleteButton.Width = 60;
             deleteButton.Content = "Удалить";
             deleteButton.Click += DeleteColumn;
             gridForColumn.Children.Add(deleteButton);
-            Grid.SetColumn(deleteButton, 6);
+            Grid.SetColumn(deleteButton, 8);
 
             return gridForColumn;
         }
 
+        private void IsForeignKey_Click(object sender, RoutedEventArgs e)
+        {
+            CheckBox isForeignKey = (CheckBox)e.Source;
+            int indexOfCheckBox = GetIndexOfCheckBox((Grid)isForeignKey.Parent);
+            TreeView schemeTree = new();
+
+            if(isForeignKey.IsChecked == true)
+            {
+                AddItemsToTree(schemeTree);
+                columnsList.Items.Insert(indexOfCheckBox + 1, schemeTree);
+            }
+            else
+            {
+                if (columnsList.Items[indexOfCheckBox + 1].GetType() == typeof(TreeView))
+                {
+                    columnsList.Items.RemoveAt(indexOfCheckBox + 1);
+                }
+            }
+        }
+
+        private void AddItemsToTree(TreeView schemeTree)
+        {
+            List<string> files = WorkWithFiles.GetFolderFiles("schemes");
+            TreeViewItem schemeItems = new();
+            schemeItems.Header = "Дерево схем";
+            foreach (string file in files)
+            {
+                schemeItems.Items.Add(file);
+            }
+
+            schemeTree.Items.Add(schemeItems);
+        }
+
+        private int GetIndexOfCheckBox(Grid grid)
+        {
+            int count = 0;
+            foreach(var item in columnsList.Items)
+            {
+                if(grid == item)
+                {
+                    return count;
+                }
+                else
+                {
+                    count++;
+                }
+            }
+
+            return count;
+        }
         private void DeleteColumn(object sender, RoutedEventArgs e)
         {
             Grid buttonParent = (Grid)((Button)e.Source).Parent;
@@ -122,6 +183,7 @@ namespace DummyDatabase.Desktop.WindowsForEditing.Scheme
                 TextBox columnName = (TextBox)gridForColumn.Children[1];
                 TextBox columnType = (TextBox)gridForColumn.Children[3];
                 CheckBox isPrimaryColumn = (CheckBox)gridForColumn.Children[5];
+                CheckBox isForeignKey = (CheckBox)gridForColumn.Children[7];
 
                 if (isPrimaryColumn.IsChecked == true)
                 {
