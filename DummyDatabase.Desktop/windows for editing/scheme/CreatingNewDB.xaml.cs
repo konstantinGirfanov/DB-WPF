@@ -14,8 +14,6 @@ namespace DummyDatabase.Desktop.WindowsForEditing.Scheme
     /// </summary>
     public partial class CreatingNewDB : Window
     {
-        private List<Core.SchemeColumn> Columns;
-        
         public CreatingNewDB()
         {
             InitializeComponent();
@@ -90,19 +88,24 @@ namespace DummyDatabase.Desktop.WindowsForEditing.Scheme
         private void IsForeignKeyClick(object sender, RoutedEventArgs e)
         {
             CheckBox isForeignKey = (CheckBox)e.Source;
-            int indexOfCheckBox = GetIndexOfCheckBox((Grid)isForeignKey.Parent);
+            int indexOfGridInColumnsList = columnsList.Items.IndexOf((Grid)isForeignKey.Parent);
 
-            ListBox schemesList = new();
-            schemesList.Name = "schemesList";
+            ListBox schemeColumnsGrid = new();
+            schemeColumnsGrid.Name = "schemesList";
 
             if(isForeignKey.IsChecked == true)
             {
-                LoadSchemesIntoList(schemesList);
-                columnsList.Items.Insert(indexOfCheckBox + 1, schemesList);
+                LoadSchemesIntoList(schemeColumnsGrid);
+                columnsList.Items.Insert(indexOfGridInColumnsList + 1, schemeColumnsGrid);
+
+                TextBlock foreignKeyInfo = new();
+                foreignKeyInfo.Text = "Привязка: ";
+                columnsList.Items.Insert(indexOfGridInColumnsList + 2, foreignKeyInfo);
             }
             else
             {
-                columnsList.Items.RemoveAt(indexOfCheckBox + 1);
+                columnsList.Items.RemoveAt(indexOfGridInColumnsList + 2);
+                columnsList.Items.RemoveAt(indexOfGridInColumnsList + 1);
             }
         }
 
@@ -134,47 +137,25 @@ namespace DummyDatabase.Desktop.WindowsForEditing.Scheme
 
         private void BindColumn(object sender, MouseButtonEventArgs e)
         {
-            //тут должна быть привязка столбца
-        }
+            ListBox box = (ListBox)sender;
+            string selectedColumn = box.SelectedItem.ToString().Split(' ')[0];
 
-        private void SchemeTreeItem_MouseUp(object sender, MouseButtonEventArgs e)
-        {
-            TreeView tree = (TreeView)sender;
-            if (tree.Items.Count == 1)
-            {
-                string selectedSchemeName = tree.Items[0].ToString();
-                string selectedSchemePath = $"{WorkWithFiles.GetFolderPath("schemes")}\\{selectedSchemeName}";
+            string schemeName = ((TreeViewItem)(box.Parent)).Header.ToString();
 
-                List<string> schemeColumns = WorkWithScheme.ReadScheme(selectedSchemePath).GetSchemeColumns();
-                foreach (string schemeColumn in schemeColumns)
-                {
-                    tree.Items.Add(schemeColumn);
-                }
-            }
-        }
-
-        private int GetIndexOfCheckBox(Grid grid)
-        {
-            int count = 0;
-            foreach(var item in columnsList.Items)
-            {
-                if(grid == item)
-                {
-                    return count;
-                }
-                else
-                {
-                    count++;
-                }
-            }
-
-            return count;
+            int index = columnsList.Items.IndexOf((ListBox)((TreeViewItem)box.Parent).Parent);
+            ((TextBlock)columnsList.Items[index + 1]).Text = $"Привязка: {schemeName} - {selectedColumn}";
         }
 
         private void DeleteColumn(object sender, RoutedEventArgs e)
         {
             Grid buttonParent = (Grid)((Button)e.Source).Parent;
-            columnsList.Items.Remove(buttonParent);
+            int index = columnsList.Items.IndexOf(buttonParent);
+            if (((CheckBox)buttonParent.Children[7]).IsChecked == true)
+            {
+                columnsList.Items.RemoveAt(index + 2);
+                columnsList.Items.RemoveAt(index + 1);
+            }
+            columnsList.Items.RemoveAt(index);
         }
 
         private void AddNewSchemeToFolder(object sender, RoutedEventArgs e)

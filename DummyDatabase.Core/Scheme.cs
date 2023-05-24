@@ -31,5 +31,18 @@ namespace DummyDatabase.Core
 
             return columns;
         }
+
+        public SchemeColumn FindSchemeColumn(string columnName)
+        {
+            foreach(SchemeColumn column in Columns)
+            {
+                if(column.Name == columnName)
+                {
+                    return column;
+                }
+            }
+
+            throw new Exception($"Столбец с именем {columnName} не найден в таблице {Name}");
+        }
     }
 }
