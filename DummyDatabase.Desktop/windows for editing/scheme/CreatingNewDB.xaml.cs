@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Text.Json;
 using System.Windows;
@@ -13,6 +14,8 @@ namespace DummyDatabase.Desktop.WindowsForEditing.Scheme
     /// </summary>
     public partial class CreatingNewDB : Window
     {
+        private List<Core.SchemeColumn> Columns;
+        
         public CreatingNewDB()
         {
             InitializeComponent();
@@ -70,7 +73,7 @@ namespace DummyDatabase.Desktop.WindowsForEditing.Scheme
 
             CheckBox isForeignKey = new();
             isForeignKey.Width = 30;
-            isForeignKey.Click += IsForeignKey_Click;
+            isForeignKey.Click += IsForeignKeyClick;
             gridForColumn.Children.Add(isForeignKey);
             Grid.SetColumn(isForeignKey, 7);
 
@@ -84,37 +87,70 @@ namespace DummyDatabase.Desktop.WindowsForEditing.Scheme
             return gridForColumn;
         }
 
-        private void IsForeignKey_Click(object sender, RoutedEventArgs e)
+        private void IsForeignKeyClick(object sender, RoutedEventArgs e)
         {
             CheckBox isForeignKey = (CheckBox)e.Source;
             int indexOfCheckBox = GetIndexOfCheckBox((Grid)isForeignKey.Parent);
-            TreeView schemeTree = new();
+
+            ListBox schemesList = new();
+            schemesList.Name = "schemesList";
 
             if(isForeignKey.IsChecked == true)
             {
-                AddItemsToTree(schemeTree);
-                columnsList.Items.Insert(indexOfCheckBox + 1, schemeTree);
+                LoadSchemesIntoList(schemesList);
+                columnsList.Items.Insert(indexOfCheckBox + 1, schemesList);
             }
             else
             {
-                if (columnsList.Items[indexOfCheckBox + 1].GetType() == typeof(TreeView))
-                {
-                    columnsList.Items.RemoveAt(indexOfCheckBox + 1);
-                }
+                columnsList.Items.RemoveAt(indexOfCheckBox + 1);
             }
         }
 
-        private void AddItemsToTree(TreeView schemeTree)
+        private void LoadSchemesIntoList(ListBox schemesListBox)
         {
             List<string> files = WorkWithFiles.GetFolderFiles("schemes");
-            TreeViewItem schemeItems = new();
-            schemeItems.Header = "Дерево схем";
+
             foreach (string file in files)
             {
-                schemeItems.Items.Add(file);
-            }
+                string schemePath = $"{WorkWithFiles.GetFolderPath("schemes")}\\{file}";
+                List<string> schemeColumns = WorkWithScheme.ReadScheme(schemePath).GetSchemeColumns();
 
-            schemeTree.Items.Add(schemeItems);
+                ListBox listBoxForSchemeColumns = new();
+                listBoxForSchemeColumns.MouseDoubleClick += BindColumn;
+
+                // С 1 потому что 0 элемент не столбец схемы.
+                for(int i = 1; i < schemeColumns.Count; i++)
+                {
+                    listBoxForSchemeColumns.Items.Add(schemeColumns[i]);
+                }
+
+                TreeViewItem treeForListBox = new();
+                treeForListBox.Header = file;
+
+                treeForListBox.Items.Add(listBoxForSchemeColumns);
+                schemesListBox.Items.Add(treeForListBox);
+            }
+        }
+
+        private void BindColumn(object sender, MouseButtonEventArgs e)
+        {
+            //тут должна быть привязка столбца
+        }
+
+        private void SchemeTreeItem_MouseUp(object sender, MouseButtonEventArgs e)
+        {
+            TreeView tree = (TreeView)sender;
+            if (tree.Items.Count == 1)
+            {
+                string selectedSchemeName = tree.Items[0].ToString();
+                string selectedSchemePath = $"{WorkWithFiles.GetFolderPath("schemes")}\\{selectedSchemeName}";
+
+                List<string> schemeColumns = WorkWithScheme.ReadScheme(selectedSchemePath).GetSchemeColumns();
+                foreach (string schemeColumn in schemeColumns)
+                {
+                    tree.Items.Add(schemeColumn);
+                }
+            }
         }
 
         private int GetIndexOfCheckBox(Grid grid)
@@ -134,6 +170,7 @@ namespace DummyDatabase.Desktop.WindowsForEditing.Scheme
 
             return count;
         }
+
         private void DeleteColumn(object sender, RoutedEventArgs e)
         {
             Grid buttonParent = (Grid)((Button)e.Source).Parent;
