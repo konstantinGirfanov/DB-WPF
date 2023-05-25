@@ -50,14 +50,15 @@ namespace DummyDatabase.Desktop.windows_for_editing.columns
         private void UpdateData(object sender, RoutedEventArgs e)
         {
             StringBuilder sb = new();
+
             foreach (TreeViewItem item in dataTree.Items)
             {
                 for (int i = 0; i < item.Items.Count - 1; i++)
                 {
                     if (i + 2 != item.Items.Count)
                     {
-                        Grid gridRow = (Grid)item.Items[i];
-                        sb.Append($"{((TextBox)(gridRow.Children[1])).Text};");
+                        string columnValue = ((TextBox)((Grid)item.Items[i]).Children[1]).Text;
+                        sb.Append($"{columnValue};");
                     }
                     else
                     {
@@ -68,13 +69,21 @@ namespace DummyDatabase.Desktop.windows_for_editing.columns
                 sb.AppendLine();
             }
 
-            string schemeDataName = WorkWithFiles.GetSchemeDataName(currentScheme.Name);
-            string dataFolderPath = WorkWithFiles.GetFolderPath("data");
-            File.WriteAllText($"{dataFolderPath}\\{schemeDataName}", sb.ToString());
+            if(WorkWithScheme.IsCorrespondsToScheme(currentScheme, sb.ToString()))
+            {
+                string schemeDataName = WorkWithFiles.GetSchemeDataName(currentScheme.Name);
+                string dataFolderPath = WorkWithFiles.GetFolderPath("data");
+                File.WriteAllText($"{dataFolderPath}\\{schemeDataName}", sb.ToString());
 
-            ReloadMainWindowData($"{dataFolderPath}\\{schemeDataName}");
+                ReloadMainWindowData($"{dataFolderPath}\\{schemeDataName}");
 
-            MessageBox.Show("Данные перезаписаны");
+                MessageBox.Show("Данные перезаписаны");
+            }
+            else
+            {
+
+                MessageBox.Show("Ошибка в данных");
+            }
         }
 
         private void ReloadMainWindowData(string dataPath)
@@ -131,8 +140,11 @@ namespace DummyDatabase.Desktop.windows_for_editing.columns
 
         private void AddEmptyDataRow(object sender, RoutedEventArgs e)
         {
-            Row emptyRow = Row.CreateEmptyRowData(currentScheme);
-            dataTree.Items.Add(CreateDataRowTreeItem(emptyRow));
+            if(currentScheme != null)
+            {
+                Row emptyRow = Row.CreateEmptyRowData(currentScheme);
+                dataTree.Items.Add(CreateDataRowTreeItem(emptyRow));
+            }
         }
 
         private void ScrollSchemeListScroller(object sender, MouseWheelEventArgs e)

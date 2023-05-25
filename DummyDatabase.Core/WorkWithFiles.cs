@@ -20,6 +20,11 @@
             return $"{Directory.GetParent(Directory.GetCurrentDirectory()).Parent.Parent.FullName}\\{folderName}";
         }
 
+        public static string GetFilePath(string folderName, string fileName)
+        {
+            return $"{GetFolderPath(folderName)}\\{fileName}";
+        }
+
         public static string GetSchemeDataName(string schemeName)
         {
             return $"{schemeName.Split('.')[0]}Data.txt";

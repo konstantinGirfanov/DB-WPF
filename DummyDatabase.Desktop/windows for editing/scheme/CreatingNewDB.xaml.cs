@@ -127,8 +127,7 @@ namespace DummyDatabase.Desktop.WindowsForEditing.Scheme
                 ListBox listBoxForSchemeColumns = new();
                 listBoxForSchemeColumns.MouseDoubleClick += BindColumn;
 
-                // С 1 потому что 0 элемент не столбец схемы.
-                for(int i = 1; i < schemeColumns.Count; i++)
+                for(int i = 0; i < schemeColumns.Count; i++)
                 {
                     listBoxForSchemeColumns.Items.Add(schemeColumns[i]);
                 }
@@ -209,10 +208,22 @@ namespace DummyDatabase.Desktop.WindowsForEditing.Scheme
                         ForeignKey key = CreateForeignKey(gridForColumn);
                         newSchemeColumns.Add(new SchemeColumn(columnName.Text, columnType.Text, true, key));
                     }
+                    else
+                    {
+                        newSchemeColumns.Add(new SchemeColumn(columnName.Text, columnType.Text, true));
+                    }
                 }
                 else
                 {
-                    newSchemeColumns.Add(new SchemeColumn(columnName.Text, columnType.Text, false));
+                    if (isForeignKey.IsChecked == true)
+                    {
+                        ForeignKey key = CreateForeignKey(gridForColumn);
+                        newSchemeColumns.Add(new SchemeColumn(columnName.Text, columnType.Text, true, key));
+                    }
+                    else
+                    {
+                        newSchemeColumns.Add(new SchemeColumn(columnName.Text, columnType.Text, true));
+                    }
                 }
             }
             scheme.Columns = newSchemeColumns.ToArray();
