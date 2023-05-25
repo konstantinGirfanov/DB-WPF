@@ -6,7 +6,6 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using DummyDatabase.Core;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace DummyDatabase.Desktop.WindowsForEditing.Scheme
 {
@@ -111,8 +110,8 @@ namespace DummyDatabase.Desktop.WindowsForEditing.Scheme
             }
             else
             {
-                gridWithCheckBox.Children.RemoveAt(gridWithCheckBox.Children.Count - 1);
-                gridWithCheckBox.Children.RemoveAt(gridWithCheckBox.Children.Count - 1);
+                gridWithCheckBox.Children.Remove(gridWithCheckBox.Children[^1]);
+                gridWithCheckBox.Children.Remove(gridWithCheckBox.Children[^1]);
             }
         }
 
@@ -149,8 +148,7 @@ namespace DummyDatabase.Desktop.WindowsForEditing.Scheme
 
             string schemeName = ((TreeViewItem)(box.Parent)).Header.ToString();
 
-            int index = columnsList.Items.IndexOf((ListBox)((TreeViewItem)box.Parent).Parent);
-            ((TextBlock)columnsList.Items[index + 1]).Text = $"Привязка: {schemeName} - {selectedColumn}";
+            ((TextBlock)((Grid)(((ListBox)((TreeViewItem)box.Parent).Parent).Parent)).Children[^1]).Text = $"Привязка: {schemeName} - {selectedColumn}";
         }
 
         private void DeleteColumn(object sender, RoutedEventArgs e)
@@ -209,9 +207,8 @@ namespace DummyDatabase.Desktop.WindowsForEditing.Scheme
                     if(isForeignKey.IsChecked == true)
                     {
                         ForeignKey key = CreateForeignKey(gridForColumn);
+                        newSchemeColumns.Add(new SchemeColumn(columnName.Text, columnType.Text, true, key));
                     }
-
-                    newSchemeColumns.Add(new SchemeColumn(columnName.Text, columnType.Text, true));
                 }
                 else
                 {
@@ -226,10 +223,10 @@ namespace DummyDatabase.Desktop.WindowsForEditing.Scheme
         private ForeignKey? CreateForeignKey(Grid grid)
         {
             int indexOfGrid = columnsList.Items.IndexOf(grid);
-            if(((TextBlock)columnsList.Items[indexOfGrid + 2]).Text.Split(' ').Length > 0)
+            if (((TextBlock)grid.Children[^1]).Text.Split(' ').Length > 0)
             {
-                string[] foreignKeyInfo = ((TextBlock)columnsList.Items[indexOfGrid + 2]).Text
-                    .Split("Привязка: ")[0].Split(" - ");
+                string[] foreignKeyInfo = ((TextBlock)grid.Children[^1]).Text
+                    .Split("Привязка: ")[1].Split(" - ");
 
                 string schemeName = foreignKeyInfo[0];
                 string schemePath = $"{WorkWithFiles.GetFolderPath("schemes")}\\{schemeName}";
