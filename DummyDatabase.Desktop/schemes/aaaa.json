@@ -1,1 +1,10 @@
-{"name":"aaaa.json","columns":[{"name":"123","type":"int","isPrimary":true}]}
+{
+    "name": "aaaa.json",
+    "columns": [
+        {
+            "isPrimary": true,
+            "name": "123",
+            "type": "int"
+        }
+    ]
+}

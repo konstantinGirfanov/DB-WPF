@@ -22,7 +22,14 @@
 
         public static string GetFilePath(string folderName, string fileName)
         {
-            return $"{GetFolderPath(folderName)}\\{fileName}";
+            if(folderName == "schemes")
+            {
+                return $"{GetFolderPath(folderName)}\\{fileName}.json";
+            }
+            else
+            {
+                return $"{GetFolderPath(folderName)}\\{fileName}";
+            }
         }
 
         public static string GetSchemeDataName(string schemeName)

@@ -1,17 +1,22 @@
-﻿using System.Text.Json;
+﻿using System.Text.Json.Serialization;
 
 namespace DummyDatabase.Core
 {
     public class ForeignKey
     {
-        public Scheme Scheme { get; set; }
+        [JsonPropertyName("scheme")]
+        public Scheme Scheme { get; init; }
 
-        public SchemeColumn SchemeColumn { get; set; }
+        [JsonPropertyName("schemeColumn")]
+        public SchemeColumn SchemeColumn { get; init; }
 
         public ForeignKey(string schemePath, string schemeColumnName)
         {
             Scheme = WorkWithScheme.ReadScheme(schemePath);
             SchemeColumn = Scheme.FindSchemeColumn(schemeColumnName);
         }
+
+        public ForeignKey()
+        { }
     }
 }

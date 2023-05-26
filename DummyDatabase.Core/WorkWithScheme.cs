@@ -59,44 +59,60 @@ namespace DummyDatabase.Core
                                 isCorresponded = false;
                             }
                             break;
+                        case "string":
+                            break;
+                        default:
+                            {
+                                isCorresponded = false;
+                                break;
+                            }
                     }
                 }
 
-                for (int i = 0; i < lineColumns.Length; i++)
+                return isCorresponded & CheckForeignKey(lineColumns, scheme);
+            }
+        }
+
+        private static bool CheckForeignKey(string[] lineColumns, Scheme scheme)
+        {
+            bool isExist = false;
+
+            for (int i = 0; i < lineColumns.Length; i++)
+            {
+                if (scheme.Columns[i].ForeignKey != null)
                 {
-                    if(scheme.Columns[i].ForeignKey != null)
+                    ForeignKey foreignKey = scheme.Columns[i].ForeignKey;
+
+                    string foreignSchemePath = WorkWithFiles.GetFilePath("schemes", foreignKey.Scheme.Name);
+                    Scheme foreignScheme = ReadScheme(foreignSchemePath);
+
+                    string foreignSchemeDataName = WorkWithFiles.GetSchemeDataName(foreignKey.Scheme.Name);
+                    string foreignSchemeDataPath = WorkWithFiles.GetFilePath("data", foreignSchemeDataName);
+                    SchemeData foreignSchemeData = new SchemeData(foreignScheme, foreignSchemeDataPath);
+
+                    foreach (Row row in foreignSchemeData.Rows)
                     {
-                        ForeignKey foreignKey = scheme.Columns[i].ForeignKey;
-
-                        string foreignSchemePath = WorkWithFiles.GetFilePath("schemes", foreignKey.Scheme.Name);
-                        Scheme foreignScheme = ReadScheme(foreignSchemePath);
-
-                        string foreignSchemeDataName = WorkWithFiles.GetSchemeDataName(foreignKey.Scheme.Name);
-                        string foreignSchemeDataPath = WorkWithFiles.GetFilePath("data", foreignSchemeDataName);
-                        SchemeData foreignSchemeData = new SchemeData(foreignScheme, foreignSchemeDataPath);
-
-                        bool isExist = false;
-                        foreach(Row row in foreignSchemeData.Rows)
+                        foreach (KeyValuePair<SchemeColumn, object> pair in row.Data)
                         {
-                            foreach(KeyValuePair<SchemeColumn, object> pair in row.Data)
+                            if (pair.Key.Type == foreignKey.SchemeColumn.Type)
                             {
-                                if(pair.Key == foreignKey.SchemeColumn)
+                                if (pair.Value.ToString() == lineColumns[i])
                                 {
-                                    if(pair.Value == lineColumns[i])
-                                    {
-                                        isExist = true;
-                                        break;
-                                    }
+                                    isExist = true;
+                                    break;
                                 }
                             }
                         }
 
-                        isCorresponded &= isExist;
+                        if (isExist)
+                        {
+                            break;
+                        }
                     }
                 }
-
-                return isCorresponded;
             }
+
+            return isExist;
         }
 
         public static bool IsNotContained(string line, List<Row> rows, Scheme scheme)

@@ -12,7 +12,8 @@ namespace DummyDatabase.Core
 
         [JsonPropertyName("isPrimary")]
         public bool IsPrimary { get; init; }
-
+        
+        [JsonPropertyName("foreignKey")]
         public ForeignKey? ForeignKey { get; init; }
 
         public SchemeColumn(string name, string type, bool isPrimary, ForeignKey foreignKey)

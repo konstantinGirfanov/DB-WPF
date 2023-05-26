@@ -66,10 +66,22 @@ namespace DummyDatabase.Desktop.windows_for_editing.columns
                         sb.Append($"{((TextBox)(gridRow.Children[1])).Text}");
                     }
                 }
-                sb.AppendLine();
+
+                if(item != dataTree.Items[^1])
+                {
+                    sb.Append("\r\n");
+                }
             }
 
-            if(WorkWithScheme.IsCorrespondsToScheme(currentScheme, sb.ToString()))
+            string[] lines = sb.ToString().Split("\r\n");
+            bool dataCorrespondsToScheme = true;
+
+            foreach(string line in lines)
+            {
+                dataCorrespondsToScheme &= WorkWithScheme.IsCorrespondsToScheme(currentScheme, line);
+            }
+
+            if(dataCorrespondsToScheme)
             {
                 string schemeDataName = WorkWithFiles.GetSchemeDataName(currentScheme.Name);
                 string dataFolderPath = WorkWithFiles.GetFolderPath("data");
