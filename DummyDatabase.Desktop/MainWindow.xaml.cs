@@ -47,12 +47,40 @@ namespace DummyDatabase.Desktop
             string dataFolderPath = WorkWithFiles.GetFolderPath("data");
             if (File.Exists($"{dataFolderPath}\\{schemeDataName}"))
             {
-                schemeDataRows.ItemsSource = new SchemeData(scheme, $"{dataFolderPath}\\{schemeDataName}").Rows;
+                //schemeDataRows.ItemsSource = null;
+                var data = new SchemeData(scheme, $"{dataFolderPath}\\{schemeDataName}").Rows;
+                foreach(Row row in data)
+                {
+                    schemeDataRows.Items.Add(CreateGridForDataRow(row));
+                }
             }
             else
             {
                 schemeDataRows.ItemsSource = new List<string>() { "Данные не найдены." };
             }
+        }
+
+        private Grid CreateGridForDataRow(Row row)
+        {
+            Grid grid = new();
+
+            List<TextBox> rowColumns = new();
+            foreach(var pair in row.Data)
+            {
+                TextBox textBox = new();
+                textBox.Text = pair.Value.ToString();
+                textBox.IsReadOnly = true;
+                rowColumns.Add(textBox);
+            }
+
+            for(int i = 0; i < rowColumns.Count; i++)
+            {
+                grid.ColumnDefinitions.Add(new ColumnDefinition());
+                grid.Children.Add(rowColumns[i]);
+                Grid.SetColumn(rowColumns[i], i);
+            }
+
+            return grid;
         }
 
         private void SchemeDataRowsMouseWheel(object sender, MouseWheelEventArgs e)

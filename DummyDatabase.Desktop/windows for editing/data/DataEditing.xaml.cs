@@ -143,7 +143,7 @@ namespace DummyDatabase.Desktop.windows_for_editing.columns
             return sb.ToString().Split("\r\n");
         }
 
-        private bool IsDuplicate(Scheme scheme, string line, List<string> lines)
+        private static bool IsDuplicate(Scheme scheme, string line, List<string> lines)
         {
             foreach (SchemeColumn column in scheme.Columns)
             {
@@ -223,6 +223,7 @@ namespace DummyDatabase.Desktop.windows_for_editing.columns
         private void DeleteRow(object sender, RoutedEventArgs e)
         {
             bool canDelete = true;
+
             Row currentRow = CreateRow((TreeViewItem)((Button)(e.Source)).Parent);
             foreach(string file in WorkWithFiles.GetFolderFiles("schemes"))
             {
