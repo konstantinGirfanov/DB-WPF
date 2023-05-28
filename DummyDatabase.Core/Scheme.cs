@@ -43,5 +43,23 @@ namespace DummyDatabase.Core
 
             throw new Exception($"Столбец с именем {columnName} не найден в таблице {Name}");
         }
+
+        public int FindSchemeColumnIndex(SchemeColumn column)
+        {
+            int number = 0;
+            foreach (SchemeColumn thisColumn in Columns)
+            {
+                if (thisColumn.Name == column.Name)
+                {
+                    return number;
+                }
+                else
+                {
+                    number++;
+                }
+            }
+
+            return number;
+        }
     }
 }

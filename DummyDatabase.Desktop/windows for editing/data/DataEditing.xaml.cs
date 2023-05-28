@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using System.Text;
 using System.Windows;
@@ -31,7 +32,7 @@ namespace DummyDatabase.Desktop.windows_for_editing.columns
             string schemesPath = WorkWithFiles.GetFolderPath("schemes");
             string schemeName = schemeList.SelectedItem.ToString();
             currentScheme = WorkWithScheme.ReadScheme($"{schemesPath}\\{schemeName}");
-
+            
             string schemeDataName = WorkWithFiles.GetSchemeDataName(currentScheme.Name);
             string dataFolderPath = WorkWithFiles.GetFolderPath("data");
 
@@ -47,7 +48,75 @@ namespace DummyDatabase.Desktop.windows_for_editing.columns
             }
         }
 
-        private void UpdateData(object sender, RoutedEventArgs e)
+        private void RewriteData(object sender, RoutedEventArgs e)
+        {
+            string[] dataLines = CreateLinesFromTree();
+            bool dataCorrespondsToScheme = true;
+
+            foreach(string line in dataLines)
+            {
+                dataCorrespondsToScheme &= WorkWithScheme.IsCorrespondsToScheme(currentScheme, line);
+            }
+
+            bool isDuplicatesExist = false;
+            if(dataCorrespondsToScheme)
+            {
+                List<string> strings = new();
+                foreach (string line in dataLines)
+                {
+                    isDuplicatesExist = IsDuplicate(currentScheme, line, strings);
+
+                    if(isDuplicatesExist)
+                    {
+                        break;
+                    }
+
+                    strings.Add(line);
+                }
+            }
+
+            if(dataCorrespondsToScheme && !isDuplicatesExist)
+            {
+                bool isNeedToCheckForeignKey = false;
+                foreach(SchemeColumn column in currentScheme.Columns)
+                {
+                    if(column.ForeignKey != null)
+                    {
+                        isNeedToCheckForeignKey = true;
+                    }
+                }
+
+                if(isNeedToCheckForeignKey)
+                {
+                    bool foreignKeysIsExist = true;
+                    foreach (string line in dataLines)
+                    {
+                        foreignKeysIsExist &= WorkWithScheme.CheckForeignKey(line, currentScheme);
+                    }
+
+                    if(foreignKeysIsExist)
+                    {
+                        string schemeDataName = WorkWithFiles.GetSchemeDataName(currentScheme.Name);
+                        string dataFolderPath = WorkWithFiles.GetFolderPath("data");
+                        File.WriteAllLines($"{dataFolderPath}\\{schemeDataName}", dataLines);
+
+                        ReloadMainWindowData($"{dataFolderPath}\\{schemeDataName}");
+
+                        MessageBox.Show("Данные перезаписаны");
+                    }
+                    else
+                    {
+                        MessageBox.Show("Ошибка в данных");
+                    }
+                }
+            }
+            else
+            {
+                MessageBox.Show("Ошибка в данных");
+            }
+        }
+
+        private string[] CreateLinesFromTree()
         {
             StringBuilder sb = new();
 
@@ -67,35 +136,33 @@ namespace DummyDatabase.Desktop.windows_for_editing.columns
                     }
                 }
 
-                if(item != dataTree.Items[^1])
+                if (item != dataTree.Items[^1])
                 {
                     sb.Append("\r\n");
                 }
             }
 
-            string[] lines = sb.ToString().Split("\r\n");
-            bool dataCorrespondsToScheme = true;
+            return sb.ToString().Split("\r\n");
+        }
 
-            foreach(string line in lines)
+        private bool IsDuplicate(Scheme scheme, string line, List<string> lines)
+        {
+            foreach (SchemeColumn column in scheme.Columns)
             {
-                dataCorrespondsToScheme &= WorkWithScheme.IsCorrespondsToScheme(currentScheme, line);
+                if(column.IsPrimary)
+                {
+                    foreach(string lineValue in lines)
+                    {
+                        int index = scheme.FindSchemeColumnIndex(column);
+                        if (lineValue.Split(';')[index] == line.Split(';')[index])
+                        {
+                            return true;
+                        }
+                    }
+                }
             }
 
-            if(dataCorrespondsToScheme)
-            {
-                string schemeDataName = WorkWithFiles.GetSchemeDataName(currentScheme.Name);
-                string dataFolderPath = WorkWithFiles.GetFolderPath("data");
-                File.WriteAllText($"{dataFolderPath}\\{schemeDataName}", sb.ToString());
-
-                ReloadMainWindowData($"{dataFolderPath}\\{schemeDataName}");
-
-                MessageBox.Show("Данные перезаписаны");
-            }
-            else
-            {
-
-                MessageBox.Show("Ошибка в данных");
-            }
+            return false;
         }
 
         private void ReloadMainWindowData(string dataPath)
@@ -138,16 +205,87 @@ namespace DummyDatabase.Desktop.windows_for_editing.columns
             Button deleteButton = new();
             deleteButton.Width = 60;
             deleteButton.Content = "Удалить";
-            deleteButton.Click += DeleteColumn;
+            deleteButton.Click += DeleteRow;
             row.Items.Add(deleteButton);
 
             return row;
         }
 
-        private void DeleteColumn(object sender, RoutedEventArgs e)
+        private void DeleteRow(object sender, RoutedEventArgs e)
         {
-            TreeViewItem buttonParent = (TreeViewItem)((Button)e.Source).Parent;
-            dataTree.Items.Remove(buttonParent);
+            bool canDelete = true;
+            Row currentRow = CreateRow((TreeViewItem)((Button)(e.Source)).Parent);
+            foreach(string file in WorkWithFiles.GetFolderFiles("schemes"))
+            {
+                Scheme scheme = WorkWithScheme.ReadScheme(WorkWithFiles.GetFilePath("schemes", file.Replace(".json", "")));
+                
+                foreach(SchemeColumn column in scheme.Columns)
+                {
+                    if (column.ForeignKey?.Scheme.Name == currentScheme.Name)
+                    {
+                        canDelete &= CheckForeignKey(column, scheme, currentRow);
+                    }
+                }
+
+            }
+
+            if(canDelete)
+            {
+                TreeViewItem buttonParent = (TreeViewItem)((Button)e.Source).Parent;
+                dataTree.Items.Remove(buttonParent);
+            }
+            else
+            {
+                MessageBox.Show("Нельзя удалить строку - есть зависящие от неё данные.");
+            }
+        }
+
+        private Row CreateRow(TreeViewItem item)
+        {
+            StringBuilder sb = new();
+
+            for (int i = 0; i < item.Items.Count - 1; i++)
+            {
+                if (i + 2 != item.Items.Count)
+                {
+                    string columnValue = ((TextBox)((Grid)item.Items[i]).Children[1]).Text;
+                    sb.Append($"{columnValue};");
+                }
+                else
+                {
+                    Grid gridRow = (Grid)item.Items[i];
+                    sb.Append($"{((TextBox)(gridRow.Children[1])).Text}");
+                }
+            }
+
+            return new Row(currentScheme, sb.ToString());
+        }
+
+        private bool CheckForeignKey(SchemeColumn column, Scheme scheme, Row currentRow)
+        {
+            string currentDataName = WorkWithFiles.GetSchemeDataName(currentScheme.Name);
+            string currentSchemeDataPath = WorkWithFiles.GetFilePath("data", currentDataName);
+            SchemeData currentData = new(currentScheme, currentSchemeDataPath);
+
+            string dataName = WorkWithFiles.GetSchemeDataName(scheme.Name);
+            string schemeDataPath = WorkWithFiles.GetFilePath("data", dataName);
+            SchemeData data = new(scheme, schemeDataPath);
+
+            foreach(Row row in data.Rows)
+            {
+                foreach(KeyValuePair<SchemeColumn, object> pair in row.Data)
+                {
+                    if(pair.Key.Type == column.Type)
+                    {
+                        if (pair.Value.ToString() == currentRow.Data[column])
+                        {
+                            return false;
+                        }
+                    }
+                }
+            }
+
+            return true;
         }
 
         private void AddEmptyDataRow(object sender, RoutedEventArgs e)

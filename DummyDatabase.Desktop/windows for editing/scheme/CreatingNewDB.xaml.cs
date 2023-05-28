@@ -218,11 +218,11 @@ namespace DummyDatabase.Desktop.WindowsForEditing.Scheme
                     if (isForeignKey.IsChecked == true)
                     {
                         ForeignKey key = CreateForeignKey(gridForColumn);
-                        newSchemeColumns.Add(new SchemeColumn(columnName.Text, columnType.Text, true, key));
+                        newSchemeColumns.Add(new SchemeColumn(columnName.Text, columnType.Text, false, key));
                     }
                     else
                     {
-                        newSchemeColumns.Add(new SchemeColumn(columnName.Text, columnType.Text, true));
+                        newSchemeColumns.Add(new SchemeColumn(columnName.Text, columnType.Text, false));
                     }
                 }
             }

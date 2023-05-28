@@ -69,18 +69,21 @@ namespace DummyDatabase.Core
                     }
                 }
 
-                return isCorresponded & CheckForeignKey(lineColumns, scheme);
+                return isCorresponded;
             }
         }
 
-        private static bool CheckForeignKey(string[] lineColumns, Scheme scheme)
+        public static bool CheckForeignKey(string line, Scheme scheme)
         {
             bool isExist = false;
 
+            string[] lineColumns = line.Split(';');
             for (int i = 0; i < lineColumns.Length; i++)
             {
                 if (scheme.Columns[i].ForeignKey != null)
                 {
+                    isExist = false;
+
                     ForeignKey foreignKey = scheme.Columns[i].ForeignKey;
 
                     string foreignSchemePath = WorkWithFiles.GetFilePath("schemes", foreignKey.Scheme.Name);
@@ -94,7 +97,7 @@ namespace DummyDatabase.Core
                     {
                         foreach (KeyValuePair<SchemeColumn, object> pair in row.Data)
                         {
-                            if (pair.Key.Type == foreignKey.SchemeColumn.Type)
+                            if (pair.Key.Name == foreignKey.SchemeColumn.Name)
                             {
                                 if (pair.Value.ToString() == lineColumns[i])
                                 {

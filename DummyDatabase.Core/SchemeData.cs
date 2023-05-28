@@ -18,7 +18,7 @@
 
             for (int i = 0; i < data.Length; i++)
             {
-                if (WorkWithScheme.IsAbleToAdd(Scheme, rows,data[i]))
+                if (WorkWithScheme.IsAbleToAdd(Scheme, rows, data[i]))
                 {
                     rows.Add(new Row(Scheme, data[i]));
                 }
