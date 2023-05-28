@@ -1,1 +1,0 @@
-{"name":"person","columns":[{"name":"id","type":"int","isPrimary":true},{"name":"name","type":"string","isPrimary":false},{"name":"age","type":"int","isPrimary":false}]}

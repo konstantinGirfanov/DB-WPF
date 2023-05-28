@@ -48,19 +48,28 @@ namespace DummyDatabase.Desktop
             string dataFolderPath = WorkWithFiles.GetFolderPath("data");
             if (File.Exists($"{dataFolderPath}\\{schemeDataName}"))
             {
-                //schemeDataRows.ItemsSource = null;
-                var data = new SchemeData(scheme, $"{dataFolderPath}\\{schemeDataName}").Rows;
-                foreach(Row row in data)
-                {
-                    schemeDataRows.Items.Add(CreateGridForDataRow(row));
-                }
+                schemeDataRows.Items.Clear();
+                schemeDataRows.ItemsSource = null;
 
-                for(int i = 0; i < ((Grid)schemeDataRows.Items[0]).Children.Count; i++)
+                var data = new SchemeData(scheme, $"{dataFolderPath}\\{schemeDataName}").Rows;
+                if(data.Count != 0)
                 {
-                    foreach (Grid item in schemeDataRows.Items)
+                    foreach (Row row in data)
                     {
-                        ((TextBox)item.Children[i]).MinWidth = GetMaxWidthInGridColumn(schemeDataRows.Items, i);
+                        schemeDataRows.Items.Add(CreateGridForDataRow(row));
                     }
+
+                    for (int i = 0; i < ((Grid)schemeDataRows.Items[0]).Children.Count; i++)
+                    {
+                        foreach (Grid item in schemeDataRows.Items)
+                        {
+                            ((TextBox)item.Children[i]).MinWidth = GetMaxWidthInGridColumn(schemeDataRows.Items, i);
+                        }
+                    }
+                }
+                else
+                {
+                    schemeDataRows.ItemsSource = new List<string>() { "Данные не найдены." };
                 }
             }
             else
