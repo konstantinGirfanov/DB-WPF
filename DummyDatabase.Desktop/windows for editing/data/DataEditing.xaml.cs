@@ -96,18 +96,16 @@ namespace DummyDatabase.Desktop.windows_for_editing.columns
 
                     if(foreignKeysIsExist)
                     {
-                        string schemeDataName = WorkWithFiles.GetSchemeDataName(currentScheme.Name);
-                        string dataFolderPath = WorkWithFiles.GetFolderPath("data");
-                        File.WriteAllLines($"{dataFolderPath}\\{schemeDataName}", dataLines);
-
-                        ReloadMainWindowData($"{dataFolderPath}\\{schemeDataName}");
-
-                        MessageBox.Show("Данные перезаписаны");
+                        WriteDataIntoFile(dataLines);
                     }
                     else
                     {
                         MessageBox.Show("Ошибка в данных");
                     }
+                }
+                else
+                {
+                    WriteDataIntoFile(dataLines);
                 }
             }
             else
@@ -163,6 +161,17 @@ namespace DummyDatabase.Desktop.windows_for_editing.columns
             }
 
             return false;
+        }
+
+        private void WriteDataIntoFile(string[] dataLines)
+        {
+            string schemeDataName = WorkWithFiles.GetSchemeDataName(currentScheme.Name);
+            string dataFolderPath = WorkWithFiles.GetFolderPath("data");
+            File.WriteAllLines($"{dataFolderPath}\\{schemeDataName}", dataLines);
+
+            ReloadMainWindowData($"{dataFolderPath}\\{schemeDataName}");
+
+            MessageBox.Show("Данные перезаписаны");
         }
 
         private void ReloadMainWindowData(string dataPath)
@@ -275,9 +284,10 @@ namespace DummyDatabase.Desktop.windows_for_editing.columns
             {
                 foreach(KeyValuePair<SchemeColumn, object> pair in row.Data)
                 {
-                    if(pair.Key.Type == column.Type)
+                    if(pair.Key.Name == column.Name)
                     {
-                        if (pair.Value.ToString() == currentRow.Data[column])
+                        string currentRowValue = currentRow.FindValue(pair.Key.ForeignKey.SchemeColumn);
+                        if (pair.Value.ToString() == currentRowValue)
                         {
                             return false;
                         }

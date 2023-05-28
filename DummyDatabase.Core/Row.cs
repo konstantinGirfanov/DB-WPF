@@ -44,5 +44,18 @@ namespace DummyDatabase.Core
 
             return sb.ToString();
         }
+
+        public string FindValue(SchemeColumn column)
+        {
+            foreach(KeyValuePair<SchemeColumn, object> pair in Data)
+            {
+                if(pair.Key.Name == column.Name)
+                {
+                    return pair.Value.ToString();
+                }
+            }
+
+            return "";
+        }
     }
 }
