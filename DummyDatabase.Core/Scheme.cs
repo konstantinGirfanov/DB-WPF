@@ -25,7 +25,16 @@ namespace DummyDatabase.Core
             List<string> columns = new();
             foreach (SchemeColumn column in Columns)
             {
-                columns.Add($"{column.Name} - {column.Type} - Primary: {column.IsPrimary}");
+                if(column.ForeignKey != null)
+                {
+                    columns.Add($"{column.Name} - {column.Type} - Primary: {column.IsPrimary}" +
+                    $"; ForeignKey: {column.ForeignKey.Scheme.Name}.{column.ForeignKey.SchemeColumn.Name}");
+                }
+                else
+                {
+                    columns.Add($"{column.Name} - {column.Type} - Primary: {column.IsPrimary}" +
+                    $"; ForeignKey: null");
+                }
             }
 
             return columns;
