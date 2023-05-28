@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Runtime.CompilerServices;
 using System.Security.Cryptography.X509Certificates;
@@ -53,6 +54,14 @@ namespace DummyDatabase.Desktop
                 {
                     schemeDataRows.Items.Add(CreateGridForDataRow(row));
                 }
+
+                for(int i = 0; i < ((Grid)schemeDataRows.Items[0]).Children.Count; i++)
+                {
+                    foreach (Grid item in schemeDataRows.Items)
+                    {
+                        ((TextBox)item.Children[i]).MinWidth = GetMaxWidthInGridColumn(schemeDataRows.Items, i);
+                    }
+                }
             }
             else
             {
@@ -70,6 +79,14 @@ namespace DummyDatabase.Desktop
                 TextBox textBox = new();
                 textBox.Text = pair.Value.ToString();
                 textBox.IsReadOnly = true;
+
+                if(pair.Key.ForeignKey != null)
+                {
+                    ToolTip tip = new();
+                    tip.Content = GetToolTip(pair.Key.ForeignKey, textBox.Text);
+                    textBox.ToolTip = tip;
+                }
+
                 rowColumns.Add(textBox);
             }
 
@@ -81,6 +98,45 @@ namespace DummyDatabase.Desktop
             }
 
             return grid;
+        }
+
+        private static double GetMaxWidthInGridColumn(ItemCollection grids, int index)
+        {
+            double maxWidth = 0;
+            
+            foreach(Grid grid in grids)
+            {
+                maxWidth = Math.Max(maxWidth, ((TextBox)grid.Children[index]).Text.Length * 10);
+            }
+
+            return maxWidth;
+        }
+
+        private string GetToolTip(ForeignKey foreignKey, string value)
+        {
+            string schemePath = WorkWithFiles.GetFilePath("schemes", foreignKey.Scheme.Name);
+            Scheme foreignScheme = WorkWithScheme.ReadScheme(schemePath);
+
+            string dataName = WorkWithFiles.GetSchemeDataName(foreignScheme.Name);
+            string dataPath = WorkWithFiles.GetFilePath("data", dataName);
+            SchemeData foreignSchemeData = new SchemeData(foreignScheme, dataPath);
+
+            string result = "";
+            foreach (Row row in foreignSchemeData.Rows)
+            {
+                foreach(var pair in row.Data)
+                {
+                    if(pair.Key.Name == foreignKey.SchemeColumn.Name)
+                    {
+                        if (value == pair.Value.ToString())
+                        {
+                            return row.ToString();
+                        }
+                    }
+                }
+            }
+
+            return result;
         }
 
         private void SchemeDataRowsMouseWheel(object sender, MouseWheelEventArgs e)
@@ -108,7 +164,7 @@ namespace DummyDatabase.Desktop
         }
 
         private void SchemeListPreviewMouseWheel(object sender, MouseWheelEventArgs e)
-        {
+            {
             if (e.Delta > 0)
             {
                 schemesScroller.LineUp();

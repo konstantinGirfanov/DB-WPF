@@ -1,0 +1,1 @@
+{"name":"library","columns":[{"name":"id","type":"int","isPrimary":true,"foreignKey":null},{"name":"name","type":"string","isPrimary":false,"foreignKey":null},{"name":"address","type":"string","isPrimary":false,"foreignKey":null}]}
