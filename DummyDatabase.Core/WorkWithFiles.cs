@@ -20,6 +20,18 @@
             return $"{Directory.GetParent(Directory.GetCurrentDirectory()).Parent.Parent.FullName}\\{folderName}";
         }
 
+        public static string GetFilePath(string folderName, string fileName)
+        {
+            if(folderName == "schemes")
+            {
+                return $"{GetFolderPath(folderName)}\\{fileName}.json";
+            }
+            else
+            {
+                return $"{GetFolderPath(folderName)}\\{fileName}";
+            }
+        }
+
         public static string GetSchemeDataName(string schemeName)
         {
             return $"{schemeName.Split('.')[0]}Data.txt";

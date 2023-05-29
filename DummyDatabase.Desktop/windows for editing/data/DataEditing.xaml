@@ -20,7 +20,7 @@
 
         <TextBlock Text="Выберите схему, для которой надо изменить данные:" FontSize="15"/>
         <Button Content="Перезаписать данные" Grid.Row="2" Height="25" Width="170"
-                VerticalAlignment="Top" HorizontalAlignment="Left" FontSize="15" Click="UpdateData"/>
+                VerticalAlignment="Top" HorizontalAlignment="Left" FontSize="15" Click="RewriteData"/>
         <ScrollViewer Grid.Row="1" PreviewMouseWheel="ScrollSchemeListScroller" Name="schemeListScroller">
             <ListBox x:Name="schemeList" MouseDoubleClick="LoadDataForScheme" FontSize="15"/>
         </ScrollViewer>

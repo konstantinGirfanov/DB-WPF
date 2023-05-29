@@ -1,0 +1,1 @@
+{"name":"groups","columns":[{"name":"id","type":"int","isPrimary":true,"ForeignKey":null},{"name":"name","type":"string","isPrimary":true,"ForeignKey":null}]}

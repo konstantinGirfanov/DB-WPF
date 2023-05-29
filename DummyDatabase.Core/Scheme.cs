@@ -23,13 +23,52 @@ namespace DummyDatabase.Core
         public List<string> GetSchemeColumns()
         {
             List<string> columns = new();
-            columns.Add("Список столбцов таблицы:");
             foreach (SchemeColumn column in Columns)
             {
-                columns.Add($"{column.Name} - {column.Type} - Primary: {column.IsPrimary}");
+                if(column.ForeignKey != null)
+                {
+                    columns.Add($"{column.Name} - {column.Type} - Primary: {column.IsPrimary}" +
+                    $"; ForeignKey: {column.ForeignKey.Scheme.Name}.{column.ForeignKey.SchemeColumn.Name}");
+                }
+                else
+                {
+                    columns.Add($"{column.Name} - {column.Type} - Primary: {column.IsPrimary}" +
+                    $"; ForeignKey: null");
+                }
             }
 
             return columns;
+        }
+
+        public SchemeColumn FindSchemeColumn(string columnName)
+        {
+            foreach(SchemeColumn column in Columns)
+            {
+                if(column.Name == columnName)
+                {
+                    return column;
+                }
+            }
+
+            throw new Exception($"Столбец с именем {columnName} не найден в таблице {Name}");
+        }
+
+        public int FindSchemeColumnIndex(SchemeColumn column)
+        {
+            int number = 0;
+            foreach (SchemeColumn thisColumn in Columns)
+            {
+                if (thisColumn.Name == column.Name)
+                {
+                    return number;
+                }
+                else
+                {
+                    number++;
+                }
+            }
+
+            return number;
         }
     }
 }

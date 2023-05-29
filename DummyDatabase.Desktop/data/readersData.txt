@@ -1,5 +1,0 @@
-id;name
-0;leha
-1;dimas
-F;AMOGUS
-2;bobik

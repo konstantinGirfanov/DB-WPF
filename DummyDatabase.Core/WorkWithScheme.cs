@@ -59,11 +59,63 @@ namespace DummyDatabase.Core
                                 isCorresponded = false;
                             }
                             break;
+                        case "string":
+                            break;
+                        default:
+                            {
+                                isCorresponded = false;
+                                break;
+                            }
                     }
                 }
 
                 return isCorresponded;
             }
+        }
+
+        public static bool CheckForeignKey(string line, Scheme scheme)
+        {
+            bool isExist = false;
+
+            string[] lineColumns = line.Split(';');
+            for (int i = 0; i < lineColumns.Length; i++)
+            {
+                if (scheme.Columns[i].ForeignKey != null)
+                {
+                    isExist = false;
+
+                    ForeignKey foreignKey = scheme.Columns[i].ForeignKey;
+
+                    string foreignSchemePath = WorkWithFiles.GetFilePath("schemes", foreignKey.Scheme.Name);
+                    Scheme foreignScheme = ReadScheme(foreignSchemePath);
+
+                    string foreignSchemeDataName = WorkWithFiles.GetSchemeDataName(foreignKey.Scheme.Name);
+                    string foreignSchemeDataPath = WorkWithFiles.GetFilePath("data", foreignSchemeDataName);
+                    SchemeData foreignSchemeData = new SchemeData(foreignScheme, foreignSchemeDataPath);
+
+                    foreach (Row row in foreignSchemeData.Rows)
+                    {
+                        foreach (KeyValuePair<SchemeColumn, object> pair in row.Data)
+                        {
+                            if (pair.Key.Name == foreignKey.SchemeColumn.Name)
+                            {
+                                if (pair.Value.ToString() == lineColumns[i])
+                                {
+                                    isExist = true;
+                                    break;
+                                }
+                            }
+                        }
+
+                        if (isExist)
+                        {
+                            break;
+                        }
+                    }
+                }
+            }
+
+            return isExist;
         }
 
         public static bool IsNotContained(string line, List<Row> rows, Scheme scheme)

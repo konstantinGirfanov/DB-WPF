@@ -26,9 +26,9 @@ namespace DummyDatabase.Desktop.WindowsForEditing.Scheme
 
         private Grid CreateGrid()
         {
-            Grid gridForColumn = new Grid();
+            Grid gridForColumn = new();
 
-            for (int i = 0; i < 7; i++)
+            for (int i = 0; i < 9; i++)
             {
                 gridForColumn.ColumnDefinitions.Add(new ColumnDefinition());
             }
@@ -63,14 +63,90 @@ namespace DummyDatabase.Desktop.WindowsForEditing.Scheme
             gridForColumn.Children.Add(isPrimaryColumn);
             Grid.SetColumn(isPrimaryColumn, 5);
 
+            TextBlock isForeignKeyTextBlock = new();
+            isForeignKeyTextBlock.Text = "Внешний ключ?";
+            gridForColumn.Children.Add(isForeignKeyTextBlock);
+            Grid.SetColumn(isForeignKeyTextBlock, 6);
+
+            CheckBox isForeignKey = new();
+            isForeignKey.Width = 30;
+            isForeignKey.Click += IsForeignKeyClick;
+            gridForColumn.Children.Add(isForeignKey);
+            Grid.SetColumn(isForeignKey, 7);
+
             Button deleteButton = new();
             deleteButton.Width = 60;
             deleteButton.Content = "Удалить";
             deleteButton.Click += DeleteColumn;
             gridForColumn.Children.Add(deleteButton);
-            Grid.SetColumn(deleteButton, 6);
+            Grid.SetColumn(deleteButton, 8);
 
             return gridForColumn;
+        }
+
+        private void IsForeignKeyClick(object sender, RoutedEventArgs e)
+        {
+            CheckBox isForeignKey = (CheckBox)e.Source;
+
+            Grid gridWithCheckBox = (Grid)isForeignKey.Parent;
+
+            gridWithCheckBox.RowDefinitions.Add(new RowDefinition());
+            gridWithCheckBox.RowDefinitions.Add(new RowDefinition());
+            gridWithCheckBox.RowDefinitions.Add(new RowDefinition());
+
+            ListBox schemeColumnsListBox = new();
+
+            if (isForeignKey.IsChecked == true)
+            {
+                LoadSchemesIntoList(schemeColumnsListBox);
+                gridWithCheckBox.Children.Add(schemeColumnsListBox);
+                Grid.SetRow(schemeColumnsListBox, 1);
+
+                TextBlock foreignKeyInfo = new();
+                foreignKeyInfo.Text = "Привязка:";
+                gridWithCheckBox.Children.Add(foreignKeyInfo);
+                Grid.SetRow(foreignKeyInfo, 2);
+            }
+            else
+            {
+                gridWithCheckBox.Children.Remove(gridWithCheckBox.Children[^1]);
+                gridWithCheckBox.Children.Remove(gridWithCheckBox.Children[^1]);
+            }
+        }
+
+        private void LoadSchemesIntoList(ListBox schemesListBox)
+        {
+            List<string> files = WorkWithFiles.GetFolderFiles("schemes");
+
+            foreach (string file in files)
+            {
+                string schemePath = $"{WorkWithFiles.GetFolderPath("schemes")}\\{file}";
+                List<string> schemeColumns = WorkWithScheme.ReadScheme(schemePath).GetSchemeColumns();
+
+                ListBox listBoxForSchemeColumns = new();
+                listBoxForSchemeColumns.MouseDoubleClick += BindColumn;
+
+                for (int i = 0; i < schemeColumns.Count; i++)
+                {
+                    listBoxForSchemeColumns.Items.Add(schemeColumns[i]);
+                }
+
+                TreeViewItem treeForListBox = new();
+                treeForListBox.Header = file;
+
+                treeForListBox.Items.Add(listBoxForSchemeColumns);
+                schemesListBox.Items.Add(treeForListBox);
+            }
+        }
+
+        private void BindColumn(object sender, MouseButtonEventArgs e)
+        {
+            ListBox box = (ListBox)sender;
+            string selectedColumn = box.SelectedItem.ToString().Split(' ')[0];
+
+            string schemeName = ((TreeViewItem)(box.Parent)).Header.ToString();
+
+            ((TextBlock)((Grid)((ListBox)((TreeViewItem)box.Parent).Parent).Parent).Children[^1]).Text = $"Привязка: {schemeName} - {selectedColumn}";
         }
 
         private void DeleteColumn(object sender, RoutedEventArgs e)
@@ -92,10 +168,7 @@ namespace DummyDatabase.Desktop.WindowsForEditing.Scheme
                 if (!File.Exists(newSchemePath))
                 {
                     File.WriteAllText(newSchemePath, schemeJSON);
-
-                    // Обновление листбокса в главном окне, который содержит список схем из папки.
-                    ((ListBox)((ScrollViewer)((Grid)((Grid)this.Owner.Content).Children[0]).Children[2]).Content).ItemsSource = WorkWithFiles.GetFolderFiles("schemes");
-
+                    ReloadMainWindowSchemeList();
                     MessageBox.Show("Схема добавлена");
                 }
                 else
@@ -107,6 +180,12 @@ namespace DummyDatabase.Desktop.WindowsForEditing.Scheme
             {
                 MessageBox.Show("Ошибка");
             }
+        }
+
+        private void ReloadMainWindowSchemeList()
+        {
+            ((ListBox)((ScrollViewer)((Grid)((Grid)Owner.Content).Children[0]).Children[2]).Content).ItemsSource = WorkWithFiles.GetFolderFiles("schemes");
+
         }
 
         private Core.Scheme CreateSchemeFromListBox()
@@ -122,19 +201,56 @@ namespace DummyDatabase.Desktop.WindowsForEditing.Scheme
                 TextBox columnName = (TextBox)gridForColumn.Children[1];
                 TextBox columnType = (TextBox)gridForColumn.Children[3];
                 CheckBox isPrimaryColumn = (CheckBox)gridForColumn.Children[5];
+                CheckBox isForeignKey = (CheckBox)gridForColumn.Children[7];
 
                 if (isPrimaryColumn.IsChecked == true)
                 {
-                    newSchemeColumns.Add(new SchemeColumn(columnName.Text, columnType.Text, true));
+                    if (isForeignKey.IsChecked == true)
+                    {
+                        ForeignKey foreignKey = CreateForeignKey(gridForColumn);
+                        newSchemeColumns.Add(new SchemeColumn(columnName.Text, columnType.Text, true, foreignKey));
+                    }
+                    else
+                    {
+                        newSchemeColumns.Add(new SchemeColumn(columnName.Text, columnType.Text, true));
+                    }
                 }
                 else
                 {
-                    newSchemeColumns.Add(new SchemeColumn(columnName.Text, columnType.Text, false));
+                    if (isForeignKey.IsChecked == true)
+                    {
+                        ForeignKey key = CreateForeignKey(gridForColumn);
+                        newSchemeColumns.Add(new SchemeColumn(columnName.Text, columnType.Text, false, key));
+                    }
+                    else
+                    {
+                        newSchemeColumns.Add(new SchemeColumn(columnName.Text, columnType.Text, false));
+                    }
                 }
             }
             scheme.Columns = newSchemeColumns.ToArray();
 
             return scheme;
+        }
+
+        private ForeignKey? CreateForeignKey(Grid grid)
+        {
+            if (((TextBlock)grid.Children[^1]).Text.Split(' ').Length > 0)
+            {
+                string[] foreignKeyInfo = ((TextBlock)grid.Children[^1]).Text
+                    .Split("Привязка: ")[1].Split(" - ");
+
+                string schemeName = foreignKeyInfo[0];
+                string schemePath = $"{WorkWithFiles.GetFolderPath("schemes")}\\{schemeName}";
+
+                string columnsName = foreignKeyInfo[1];
+
+                return new ForeignKey(schemePath, columnsName);
+            }
+            else
+            {
+                return null;
+            }
         }
 
         private bool IsAbleToCreate()
