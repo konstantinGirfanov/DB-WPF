@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.IO;
 using System.Text.Json;
 using System.Windows;
@@ -109,7 +110,7 @@ namespace DummyDatabase.Desktop.WindowsForEditing.Columns
                 Grid.SetRow(schemesListBox, 1);
 
                 TextBlock foreignKeyInfo = new();
-                foreignKeyInfo.Text = $"Привязка: {foreignKey.Scheme.Name}.{foreignKey.SchemeColumn.Name}";
+                foreignKeyInfo.Text = $"Привязка: {foreignKey.Scheme.Name} - {foreignKey.SchemeColumn.Name}";
                 gridForColumn.Children.Add(foreignKeyInfo);
                 Grid.SetRow(foreignKeyInfo, 2);
             }
@@ -210,8 +211,9 @@ namespace DummyDatabase.Desktop.WindowsForEditing.Columns
             }
             else
             {
-                gridWithCheckBox.Children.Remove(gridWithCheckBox.Children[^1]);
-                gridWithCheckBox.Children.Remove(gridWithCheckBox.Children[^1]);
+                int index = gridWithCheckBox.Children.Count - 2;
+                gridWithCheckBox.Children.Remove(gridWithCheckBox.Children[index]);
+                gridWithCheckBox.Children.Remove(gridWithCheckBox.Children[index - 1]);
             }
         }
 
@@ -327,7 +329,7 @@ namespace DummyDatabase.Desktop.WindowsForEditing.Columns
                 string[] values = foreignKeyInfo.Split("Привязка: ")[1].Split(" - ");
 
                 string schemeName = values[0];
-                string schemePath = $"{WorkWithFiles.GetFolderPath("schemes")}\\{schemeName}";
+                string schemePath = WorkWithFiles.GetFilePath("schemes", schemeName.Replace(".json", ""));
 
                 string columnsName = values[1];
 

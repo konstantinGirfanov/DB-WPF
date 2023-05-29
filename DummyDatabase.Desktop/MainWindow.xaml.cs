@@ -33,6 +33,8 @@ namespace DummyDatabase.Desktop
 
         private void LoadColumns()
         {
+            schemeColumnsList.ItemsSource = null;
+
             string schemesPath = WorkWithFiles.GetFolderPath("schemes");
             string schemeName = schemeList.SelectedItem.ToString();
             scheme = WorkWithScheme.ReadScheme($"{schemesPath}\\{schemeName}");
@@ -42,13 +44,13 @@ namespace DummyDatabase.Desktop
 
         private void LoadData()
         {
+            schemeDataRows.ItemsSource = null;
+            schemeDataRows.Items.Clear();
+
             string schemeDataName = WorkWithFiles.GetSchemeDataName(scheme.Name);
             string dataFolderPath = WorkWithFiles.GetFolderPath("data");
             if (File.Exists($"{dataFolderPath}\\{schemeDataName}"))
             {
-                schemeDataRows.Items.Clear();
-                schemeDataRows.ItemsSource = null;
-
                 var data = new SchemeData(scheme, $"{dataFolderPath}\\{schemeDataName}").Rows;
                 if (data.Count != 0)
                 {

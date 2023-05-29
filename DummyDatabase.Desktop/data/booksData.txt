@@ -1,2 +1,2 @@
-1;1989;sun czi;1989;lib2
+1;1984;joj;1989;lib2
 2;war and peace;tolstoy;993;lib1

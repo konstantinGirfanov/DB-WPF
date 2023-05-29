@@ -1,2 +1,4 @@
-1;1
-2;2
+1;1;student1
+2;2;student2
+3;3;sus
+4;2;boba

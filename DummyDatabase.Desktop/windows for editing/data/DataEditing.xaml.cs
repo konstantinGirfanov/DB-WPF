@@ -177,10 +177,14 @@ namespace DummyDatabase.Desktop.windows_for_editing.columns
         {
             if (File.Exists(dataPath))
             {
+                ((ListBox)((ScrollViewer)((Grid)Owner.Content).Children[3]).Content).ItemsSource = null;
+                ((ListBox)((ScrollViewer)((Grid)Owner.Content).Children[3]).Content).Items.Clear();
                 ((ListBox)((ScrollViewer)((Grid)Owner.Content).Children[3]).Content).ItemsSource = new SchemeData(currentScheme, dataPath).Rows;
             }
             else
             {
+                ((ListBox)((ScrollViewer)((Grid)Owner.Content).Children[3]).Content).ItemsSource = null;
+                ((ListBox)((ScrollViewer)((Grid)Owner.Content).Children[3]).Content).Items.Clear();
                 ((ListBox)((ScrollViewer)((Grid)Owner.Content).Children[3]).Content).ItemsSource = new List<string>() { "Данные не найдены." };
             }
         }
