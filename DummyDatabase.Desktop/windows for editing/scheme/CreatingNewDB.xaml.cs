@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Text.Json;
 using System.Windows;
@@ -27,7 +26,7 @@ namespace DummyDatabase.Desktop.WindowsForEditing.Scheme
 
         private Grid CreateGrid()
         {
-            Grid gridForColumn = new Grid();
+            Grid gridForColumn = new();
 
             for (int i = 0; i < 9; i++)
             {
@@ -97,7 +96,7 @@ namespace DummyDatabase.Desktop.WindowsForEditing.Scheme
 
             ListBox schemeColumnsListBox = new();
 
-            if(isForeignKey.IsChecked == true)
+            if (isForeignKey.IsChecked == true)
             {
                 LoadSchemesIntoList(schemeColumnsListBox);
                 gridWithCheckBox.Children.Add(schemeColumnsListBox);
@@ -127,7 +126,7 @@ namespace DummyDatabase.Desktop.WindowsForEditing.Scheme
                 ListBox listBoxForSchemeColumns = new();
                 listBoxForSchemeColumns.MouseDoubleClick += BindColumn;
 
-                for(int i = 0; i < schemeColumns.Count; i++)
+                for (int i = 0; i < schemeColumns.Count; i++)
                 {
                     listBoxForSchemeColumns.Items.Add(schemeColumns[i]);
                 }
@@ -147,7 +146,7 @@ namespace DummyDatabase.Desktop.WindowsForEditing.Scheme
 
             string schemeName = ((TreeViewItem)(box.Parent)).Header.ToString();
 
-            ((TextBlock)((Grid)(((ListBox)((TreeViewItem)box.Parent).Parent).Parent)).Children[^1]).Text = $"Привязка: {schemeName} - {selectedColumn}";
+            ((TextBlock)((Grid)((ListBox)((TreeViewItem)box.Parent).Parent).Parent).Children[^1]).Text = $"Привязка: {schemeName} - {selectedColumn}";
         }
 
         private void DeleteColumn(object sender, RoutedEventArgs e)
@@ -169,10 +168,7 @@ namespace DummyDatabase.Desktop.WindowsForEditing.Scheme
                 if (!File.Exists(newSchemePath))
                 {
                     File.WriteAllText(newSchemePath, schemeJSON);
-
-                    // Обновление листбокса в главном окне, который содержит список схем из папки.
-                    ((ListBox)((ScrollViewer)((Grid)((Grid)Owner.Content).Children[0]).Children[2]).Content).ItemsSource = WorkWithFiles.GetFolderFiles("schemes");
-
+                    ReloadMainWindowSchemeList();
                     MessageBox.Show("Схема добавлена");
                 }
                 else
@@ -184,6 +180,12 @@ namespace DummyDatabase.Desktop.WindowsForEditing.Scheme
             {
                 MessageBox.Show("Ошибка");
             }
+        }
+
+        private void ReloadMainWindowSchemeList()
+        {
+            ((ListBox)((ScrollViewer)((Grid)((Grid)Owner.Content).Children[0]).Children[2]).Content).ItemsSource = WorkWithFiles.GetFolderFiles("schemes");
+
         }
 
         private Core.Scheme CreateSchemeFromListBox()
@@ -203,10 +205,10 @@ namespace DummyDatabase.Desktop.WindowsForEditing.Scheme
 
                 if (isPrimaryColumn.IsChecked == true)
                 {
-                    if(isForeignKey.IsChecked == true)
+                    if (isForeignKey.IsChecked == true)
                     {
-                        ForeignKey key = CreateForeignKey(gridForColumn);
-                        newSchemeColumns.Add(new SchemeColumn(columnName.Text, columnType.Text, true, key));
+                        ForeignKey foreignKey = CreateForeignKey(gridForColumn);
+                        newSchemeColumns.Add(new SchemeColumn(columnName.Text, columnType.Text, true, foreignKey));
                     }
                     else
                     {
@@ -233,7 +235,6 @@ namespace DummyDatabase.Desktop.WindowsForEditing.Scheme
 
         private ForeignKey? CreateForeignKey(Grid grid)
         {
-            int indexOfGrid = columnsList.Items.IndexOf(grid);
             if (((TextBlock)grid.Children[^1]).Text.Split(' ').Length > 0)
             {
                 string[] foreignKeyInfo = ((TextBlock)grid.Children[^1]).Text

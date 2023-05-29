@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Runtime.CompilerServices;
-using System.Security.Cryptography.X509Certificates;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -52,7 +50,7 @@ namespace DummyDatabase.Desktop
                 schemeDataRows.ItemsSource = null;
 
                 var data = new SchemeData(scheme, $"{dataFolderPath}\\{schemeDataName}").Rows;
-                if(data.Count != 0)
+                if (data.Count != 0)
                 {
                     foreach (Row row in data)
                     {
@@ -83,13 +81,13 @@ namespace DummyDatabase.Desktop
             Grid grid = new();
 
             List<TextBox> rowColumns = new();
-            foreach(var pair in row.Data)
+            foreach (var pair in row.Data)
             {
                 TextBox textBox = new();
                 textBox.Text = pair.Value.ToString();
                 textBox.IsReadOnly = true;
 
-                if(pair.Key.ForeignKey != null)
+                if (pair.Key.ForeignKey != null)
                 {
                     ToolTip tip = new();
                     tip.Content = GetToolTip(pair.Key.ForeignKey, textBox.Text);
@@ -99,7 +97,7 @@ namespace DummyDatabase.Desktop
                 rowColumns.Add(textBox);
             }
 
-            for(int i = 0; i < rowColumns.Count; i++)
+            for (int i = 0; i < rowColumns.Count; i++)
             {
                 grid.ColumnDefinitions.Add(new ColumnDefinition());
                 grid.Children.Add(rowColumns[i]);
@@ -109,11 +107,11 @@ namespace DummyDatabase.Desktop
             return grid;
         }
 
-        private static double GetMaxWidthInGridColumn(ItemCollection grids, int index)
+        private double GetMaxWidthInGridColumn(ItemCollection grids, int index)
         {
             double maxWidth = 0;
-            
-            foreach(Grid grid in grids)
+
+            foreach (Grid grid in grids)
             {
                 maxWidth = Math.Max(maxWidth, ((TextBox)grid.Children[index]).Text.Length * 10);
             }
@@ -133,9 +131,9 @@ namespace DummyDatabase.Desktop
             string result = "";
             foreach (Row row in foreignSchemeData.Rows)
             {
-                foreach(var pair in row.Data)
+                foreach (var pair in row.Data)
                 {
-                    if(pair.Key.Name == foreignKey.SchemeColumn.Name)
+                    if (pair.Key.Name == foreignKey.SchemeColumn.Name)
                     {
                         if (value == pair.Value.ToString())
                         {
@@ -150,7 +148,7 @@ namespace DummyDatabase.Desktop
 
         private void SchemeDataRowsMouseWheel(object sender, MouseWheelEventArgs e)
         {
-            if(e.Delta > 0)
+            if (e.Delta > 0)
             {
                 dataScroller.LineUp();
             }
@@ -173,7 +171,7 @@ namespace DummyDatabase.Desktop
         }
 
         private void SchemeListPreviewMouseWheel(object sender, MouseWheelEventArgs e)
-            {
+        {
             if (e.Delta > 0)
             {
                 schemesScroller.LineUp();

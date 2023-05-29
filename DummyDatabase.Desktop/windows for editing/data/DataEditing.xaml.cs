@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.ComponentModel;
 using System.IO;
 using System.Text;
 using System.Windows;
@@ -32,7 +31,7 @@ namespace DummyDatabase.Desktop.windows_for_editing.columns
             string schemesPath = WorkWithFiles.GetFolderPath("schemes");
             string schemeName = schemeList.SelectedItem.ToString();
             currentScheme = WorkWithScheme.ReadScheme($"{schemesPath}\\{schemeName}");
-            
+
             string schemeDataName = WorkWithFiles.GetSchemeDataName(currentScheme.Name);
             string dataFolderPath = WorkWithFiles.GetFolderPath("data");
 
@@ -53,20 +52,20 @@ namespace DummyDatabase.Desktop.windows_for_editing.columns
             string[] dataLines = CreateLinesFromTree();
             bool dataCorrespondsToScheme = true;
 
-            foreach(string line in dataLines)
+            foreach (string line in dataLines)
             {
                 dataCorrespondsToScheme &= WorkWithScheme.IsCorrespondsToScheme(currentScheme, line);
             }
 
             bool isDuplicatesExist = false;
-            if(dataCorrespondsToScheme)
+            if (dataCorrespondsToScheme)
             {
                 List<string> strings = new();
                 foreach (string line in dataLines)
                 {
                     isDuplicatesExist = IsDuplicate(currentScheme, line, strings);
 
-                    if(isDuplicatesExist)
+                    if (isDuplicatesExist)
                     {
                         break;
                     }
@@ -75,18 +74,18 @@ namespace DummyDatabase.Desktop.windows_for_editing.columns
                 }
             }
 
-            if(dataCorrespondsToScheme && !isDuplicatesExist)
+            if (dataCorrespondsToScheme && !isDuplicatesExist)
             {
                 bool isNeedToCheckForeignKey = false;
-                foreach(SchemeColumn column in currentScheme.Columns)
+                foreach (SchemeColumn column in currentScheme.Columns)
                 {
-                    if(column.ForeignKey != null)
+                    if (column.ForeignKey != null)
                     {
                         isNeedToCheckForeignKey = true;
                     }
                 }
 
-                if(isNeedToCheckForeignKey)
+                if (isNeedToCheckForeignKey)
                 {
                     bool foreignKeysIsExist = true;
                     foreach (string line in dataLines)
@@ -94,7 +93,7 @@ namespace DummyDatabase.Desktop.windows_for_editing.columns
                         foreignKeysIsExist &= WorkWithScheme.CheckForeignKey(line, currentScheme);
                     }
 
-                    if(foreignKeysIsExist)
+                    if (foreignKeysIsExist)
                     {
                         WriteDataIntoFile(dataLines);
                     }
@@ -143,13 +142,13 @@ namespace DummyDatabase.Desktop.windows_for_editing.columns
             return sb.ToString().Split("\r\n");
         }
 
-        private static bool IsDuplicate(Scheme scheme, string line, List<string> lines)
+        private bool IsDuplicate(Scheme scheme, string line, List<string> lines)
         {
             foreach (SchemeColumn column in scheme.Columns)
             {
-                if(column.IsPrimary)
+                if (column.IsPrimary)
                 {
-                    foreach(string lineValue in lines)
+                    foreach (string lineValue in lines)
                     {
                         int index = scheme.FindSchemeColumnIndex(column);
                         if (lineValue.Split(';')[index] == line.Split(';')[index])
@@ -178,11 +177,11 @@ namespace DummyDatabase.Desktop.windows_for_editing.columns
         {
             if (File.Exists(dataPath))
             {
-                ((ListBox)((ScrollViewer)((Grid)this.Owner.Content).Children[3]).Content).ItemsSource = new SchemeData(currentScheme, dataPath).Rows;
+                ((ListBox)((ScrollViewer)((Grid)Owner.Content).Children[3]).Content).ItemsSource = new SchemeData(currentScheme, dataPath).Rows;
             }
             else
             {
-                ((ListBox)((ScrollViewer)((Grid)this.Owner.Content).Children[3]).Content).ItemsSource = new List<string>() { "Данные не найдены." };
+                ((ListBox)((ScrollViewer)((Grid)Owner.Content).Children[3]).Content).ItemsSource = new List<string>() { "Данные не найдены." };
             }
         }
         private TreeViewItem CreateDataRowTreeItem(Row dataRow)
@@ -225,11 +224,11 @@ namespace DummyDatabase.Desktop.windows_for_editing.columns
             bool canDelete = true;
 
             Row currentRow = CreateRow((TreeViewItem)((Button)(e.Source)).Parent);
-            foreach(string file in WorkWithFiles.GetFolderFiles("schemes"))
+            foreach (string file in WorkWithFiles.GetFolderFiles("schemes"))
             {
                 Scheme scheme = WorkWithScheme.ReadScheme(WorkWithFiles.GetFilePath("schemes", file.Replace(".json", "")));
-                
-                foreach(SchemeColumn column in scheme.Columns)
+
+                foreach (SchemeColumn column in scheme.Columns)
                 {
                     if (column.ForeignKey?.Scheme.Name == currentScheme.Name)
                     {
@@ -239,7 +238,7 @@ namespace DummyDatabase.Desktop.windows_for_editing.columns
 
             }
 
-            if(canDelete)
+            if (canDelete)
             {
                 TreeViewItem buttonParent = (TreeViewItem)((Button)e.Source).Parent;
                 dataTree.Items.Remove(buttonParent);
@@ -275,17 +274,16 @@ namespace DummyDatabase.Desktop.windows_for_editing.columns
         {
             string currentDataName = WorkWithFiles.GetSchemeDataName(currentScheme.Name);
             string currentSchemeDataPath = WorkWithFiles.GetFilePath("data", currentDataName);
-            SchemeData currentData = new(currentScheme, currentSchemeDataPath);
 
             string dataName = WorkWithFiles.GetSchemeDataName(scheme.Name);
             string schemeDataPath = WorkWithFiles.GetFilePath("data", dataName);
             SchemeData data = new(scheme, schemeDataPath);
 
-            foreach(Row row in data.Rows)
+            foreach (Row row in data.Rows)
             {
-                foreach(KeyValuePair<SchemeColumn, object> pair in row.Data)
+                foreach (KeyValuePair<SchemeColumn, object> pair in row.Data)
                 {
-                    if(pair.Key.Name == column.Name)
+                    if (pair.Key.Name == column.Name)
                     {
                         string currentRowValue = currentRow.FindValue(pair.Key.ForeignKey.SchemeColumn);
                         if (pair.Value.ToString() == currentRowValue)
@@ -301,7 +299,7 @@ namespace DummyDatabase.Desktop.windows_for_editing.columns
 
         private void AddEmptyDataRow(object sender, RoutedEventArgs e)
         {
-            if(currentScheme != null)
+            if (currentScheme != null)
             {
                 Row emptyRow = Row.CreateEmptyRowData(currentScheme);
                 dataTree.Items.Add(CreateDataRowTreeItem(emptyRow));
