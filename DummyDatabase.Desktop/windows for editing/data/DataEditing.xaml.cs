@@ -18,6 +18,7 @@ namespace DummyDatabase.Desktop.windows_for_editing.columns
         public DataEditing()
         {
             InitializeComponent();
+
             schemeList.ItemsSource = WorkWithFiles.GetFolderFiles("schemes");
         }
 
@@ -156,6 +157,8 @@ namespace DummyDatabase.Desktop.windows_for_editing.columns
                             return true;
                         }
                     }
+
+                    return false;
                 }
             }
 
