@@ -1,2 +1,4 @@
 1;1984;joj;1989;lib2
 2;war and peace;tolstoy;993;lib1
+3;1989;kit;2000;lib2
+4;5;354;345;lib3
