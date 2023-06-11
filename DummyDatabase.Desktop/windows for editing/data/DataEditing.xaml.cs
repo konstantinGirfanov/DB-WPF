@@ -4,6 +4,7 @@ using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System.Windows.Shapes;
 using DummyDatabase.Core;
 
 namespace DummyDatabase.Desktop.windows_for_editing.columns
@@ -51,67 +52,84 @@ namespace DummyDatabase.Desktop.windows_for_editing.columns
         private void RewriteData(object sender, RoutedEventArgs e)
         {
             string[] dataLines = CreateLinesFromTree();
-            bool dataCorrespondsToScheme = true;
 
-            foreach (string line in dataLines)
+            bool dataCorrespondsToScheme = IsDataCorrespondsToScheme(dataLines);
+            bool isDuplicatesExist = IsDataHaveDuplicates(dataLines);
+
+            bool isNeedToCheckForeignKey = IsDataNeedsToCheckForeignKeys();
+            bool isforeignKeysIsExist = true;
+            if (isNeedToCheckForeignKey)
             {
-                dataCorrespondsToScheme &= WorkWithScheme.IsCorrespondsToScheme(currentScheme, line);
+                isforeignKeysIsExist = IsDataHaveForeignKeys(dataLines);
             }
 
-            bool isDuplicatesExist = false;
-            if (dataCorrespondsToScheme)
+            if(dataCorrespondsToScheme && !isDuplicatesExist && isforeignKeysIsExist)
             {
-                List<string> strings = new();
-                foreach (string line in dataLines)
-                {
-                    isDuplicatesExist = IsDuplicate(currentScheme, line, strings);
-
-                    if (isDuplicatesExist)
-                    {
-                        break;
-                    }
-
-                    strings.Add(line);
-                }
-            }
-
-            if (dataCorrespondsToScheme && !isDuplicatesExist)
-            {
-                bool isNeedToCheckForeignKey = false;
-                foreach (SchemeColumn column in currentScheme.Columns)
-                {
-                    if (column.ForeignKey != null)
-                    {
-                        isNeedToCheckForeignKey = true;
-                    }
-                }
-
-                if (isNeedToCheckForeignKey)
-                {
-                    bool foreignKeysIsExist = true;
-                    foreach (string line in dataLines)
-                    {
-                        foreignKeysIsExist &= WorkWithScheme.CheckForeignKey(line, currentScheme);
-                    }
-
-                    if (foreignKeysIsExist)
-                    {
-                        WriteDataIntoFile(dataLines);
-                    }
-                    else
-                    {
-                        MessageBox.Show("Ошибка в данных");
-                    }
-                }
-                else
-                {
-                    WriteDataIntoFile(dataLines);
-                }
+                WriteDataIntoFile(dataLines);
             }
             else
             {
                 MessageBox.Show("Ошибка в данных");
             }
+        }
+
+        private bool IsDataCorrespondsToScheme(string[] lines)
+        {
+            bool dataCorrespondsToScheme = true;
+
+            foreach (string line in lines)
+            {
+                dataCorrespondsToScheme &= WorkWithScheme.IsCorrespondsToScheme(currentScheme, line);
+            }
+
+            return dataCorrespondsToScheme;
+        }
+
+        private bool IsDataHaveDuplicates(string[] lines)
+        {
+            bool isDuplicatesExist = false;
+
+            List<string> existingLines = new();
+            foreach (string line in lines)
+            {
+                isDuplicatesExist = IsDuplicate(currentScheme, line, existingLines);
+
+                if (isDuplicatesExist)
+                {
+                    break;
+                }
+
+                existingLines.Add(line);
+            }
+
+            return isDuplicatesExist;
+        }
+
+        private bool IsDataHaveForeignKeys(string[] lines)
+        {
+            bool foreignKeysIsExist = true;
+
+            foreach (string line in lines)
+            {
+                foreignKeysIsExist &= WorkWithScheme.CheckForeignKey(line, currentScheme);
+            }
+
+            return foreignKeysIsExist;
+        }
+
+        private bool IsDataNeedsToCheckForeignKeys()
+        {
+            bool isNeedToCheckForeignKey = false;
+
+            foreach (SchemeColumn column in currentScheme.Columns)
+            {
+                if (column.ForeignKey != null)
+                {
+                    isNeedToCheckForeignKey = true;
+                }
+            }
+
+            return isNeedToCheckForeignKey;
         }
 
         private string[] CreateLinesFromTree()
@@ -143,7 +161,7 @@ namespace DummyDatabase.Desktop.windows_for_editing.columns
             return sb.ToString().Split("\r\n");
         }
 
-        private bool IsDuplicate(Scheme scheme, string line, List<string> lines)
+        private static bool IsDuplicate(Scheme scheme, string line, List<string> lines)
         {
             foreach (SchemeColumn column in scheme.Columns)
             {
